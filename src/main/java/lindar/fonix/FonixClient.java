@@ -1,6 +1,6 @@
 package lindar.fonix;
 
-import lindar.acolyte.vo.AccessCredentials;
+import lindar.fonix.api.FonixCarrierBillingResource;
 import lindar.fonix.api.FonixSmsResource;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,17 +11,23 @@ import lombok.extern.slf4j.Slf4j;
 public class FonixClient {
 
     private final FonixSmsResource fonixSmsResource;
+    private final FonixCarrierBillingResource fonixCarrierBillingResource;
 
     public FonixClient(String apiKey) {
-        fonixSmsResource = new FonixSmsResource(apiKey);
+        this(apiKey, false);
     }
-
 
     public FonixClient(String apiKey, boolean dummyMode) {
         fonixSmsResource = new FonixSmsResource(apiKey, dummyMode);
+        fonixCarrierBillingResource = new FonixCarrierBillingResource(apiKey, dummyMode);
+
     }
 
     public FonixSmsResource sms(){
         return fonixSmsResource;
+    }
+
+    public FonixCarrierBillingResource carrierBilling(){
+        return fonixCarrierBillingResource;
     }
 }
