@@ -16,7 +16,7 @@ public class ChargeReport {
     /*
     * The API version in use.
     */
-    private String version;
+    private String ifVersion;
 
     /*
     * The mobile number of the user who was charged. The format is MONUMBER=447111122222.

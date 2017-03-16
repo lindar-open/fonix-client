@@ -1,6 +1,5 @@
 package lindar.fonix.api;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.lindar.wellrested.vo.ResponseVO;
 import lindar.fonix.exception.FonixBadRequestException;
@@ -10,14 +9,12 @@ import lindar.fonix.exception.FonixUnexpectedErrorException;
 import lindar.fonix.vo.ChargeSmsResponse;
 import lindar.fonix.vo.SendSmsResponse;
 import lindar.fonix.vo.internal.InternalChargeSmsResponse;
-import lindar.fonix.vo.internal.InternalFailureResponse;
 import lindar.fonix.vo.internal.InternalSendSmsResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Api for dealing with SMS on the Fonix Platform

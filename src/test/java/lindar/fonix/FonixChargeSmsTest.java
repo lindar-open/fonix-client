@@ -34,7 +34,7 @@ public class FonixChargeSmsTest {
 
     @Test
     public void validSendSms() throws FonixException {
-        ChargeSmsResponse response = fonixClient.sms().chargeSms(FAKE_VALID_MOBILE_NUMBER, "Demo", "Hello, this is a test", 500);
+        ChargeSmsResponse response = fonixClient.sms().chargeSms(FAKE_VALID_MOBILE_NUMBER, "Demo", "Hello, this is a test");
         assertThat(response, hasProperty("txguid", notNullValue()));
     }
 
@@ -44,7 +44,7 @@ public class FonixChargeSmsTest {
         thrown.expect(hasProperty("errorCode", is("INVALID_NUMBER")));
         thrown.expect(hasProperty("parameter", is("NUMBERS")));
 
-        fonixClient.sms().chargeSms("hello", ORIGINATOR, "Hello, this is a test", 500);
+        fonixClient.sms().chargeSms("hello", ORIGINATOR, "Hello, this is a test");
     }
 
     @Test
@@ -53,7 +53,7 @@ public class FonixChargeSmsTest {
         thrown.expect(hasProperty("errorCode", is("TOO_MANY_CHARACTERS")));
         thrown.expect(hasProperty("parameter", is("ORIGINATOR")));
 
-        fonixClient.sms().chargeSms("hello", "invalid from", "Hello, this is a test", 500);
+        fonixClient.sms().chargeSms("hello", "invalid from", "Hello, this is a test");
     }
 
     @Test
@@ -62,7 +62,7 @@ public class FonixChargeSmsTest {
         thrown.expect(hasProperty("errorCode", is("IS_EMPTY")));
         thrown.expect(hasProperty("parameter", is("BODY")));
 
-        fonixClient.sms().chargeSms(FAKE_VALID_MOBILE_NUMBER, ORIGINATOR, "", 500);
+        fonixClient.sms().chargeSms(FAKE_VALID_MOBILE_NUMBER, ORIGINATOR, "");
     }
 
     @Test
@@ -78,13 +78,14 @@ public class FonixChargeSmsTest {
                 " Phasellus semper quis diam a suscipit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos." +
                 " Etiam commodo malesuada ipsum ac gravida. Proin nec enim commodo, tristique est vitae, convallis purus." +
                 " Aliquam viverra purus at purus bibendum, vel ultricies justo sodales. Mauris non ante risus." +
-                " Nullam id metus fermentum, commodo enim sed, accumsan tortor.", 500);
+                " Nullam id metus fermentum, commodo enim sed, accumsan tortor.");
     }
 
     @Test
     public void invalidAuth() throws FonixException {
         thrown.expect(FonixNotAuthorizedException.class);
 
-        ChargeSmsResponse response = new FonixClient("invalid-auth", true).sms().chargeSms(FAKE_VALID_MOBILE_NUMBER, ORIGINATOR, "Hello, this is a test", 500);
+        ChargeSmsResponse response = new FonixClient("invalid-auth", true).sms()
+                .chargeSms(FAKE_VALID_MOBILE_NUMBER, ORIGINATOR, "Hello, this is a test");
     }
 }

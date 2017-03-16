@@ -5,6 +5,7 @@ package lindar.fonix.api;
  */
 
 import com.google.common.collect.Lists;
+import com.lindar.wellrested.vo.ResponseVO;
 import lindar.fonix.util.FonixTranslator;
 import lindar.fonix.vo.CarrierBilling;
 import lindar.fonix.exception.FonixBadRequestException;
@@ -20,7 +21,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.spauny.joy.wellrested.vo.ResponseVO;
 
 import java.util.List;
 import java.util.Map;
@@ -38,7 +38,7 @@ public class FonixCarrierBillingResource extends BaseFonixResource{
 
     private final String CHARGE_MOBILE_ENDPOINT = "chargemobile";
 
-    private final String CR_VERSION = "IFVERSION";
+    private final String CR_IFVERSION = "IFVERSION";
     private final String CR_CHARGE_METHOD = "CHARGEMETHOD";
     private final String CR_MOBILE_NUMBER = "MONUMBER";
     private final String CR_OPERATOR = "OPERATOR";
@@ -77,7 +77,7 @@ public class FonixCarrierBillingResource extends BaseFonixResource{
 
         chargeReport.setMobileNumber(mapParameters.get(CR_MOBILE_NUMBER));
         chargeReport.setGuid(mapParameters.get(CR_GUID));
-        chargeReport.setVersion(mapParameters.get(CR_VERSION));
+        chargeReport.setIfVersion(mapParameters.get(CR_IFVERSION));
 
         chargeReport.setOperator(mapParameters.get(CR_OPERATOR));
         chargeReport.setStatusCode(mapParameters.get(CR_STATUS_CODE));

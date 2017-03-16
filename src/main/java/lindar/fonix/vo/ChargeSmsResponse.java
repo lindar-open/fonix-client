@@ -1,11 +1,7 @@
 package lindar.fonix.vo;
 
 import lindar.fonix.vo.internal.InternalChargeSmsResponse;
-import lindar.fonix.vo.internal.InternalSendSmsResponse;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.jsoup.Connection;
 
 /**
  * Created by Steven on 10/03/2017.
