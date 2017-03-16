@@ -9,13 +9,11 @@ import lombok.NoArgsConstructor;
  * Created by Steven on 10/03/2017.
  */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class SendSmsResponse {
-    private String txguid;
-    private String numbers;
-    private String smsparts;
-    private String encoding;
+public class SendSmsResponse extends BaseSmsResponse{
+
+    public SendSmsResponse(String txguid, String numbers, String smsparts, String encoding) {
+        super(txguid, numbers, smsparts, encoding);
+    }
 
     public static SendSmsResponse from(InternalSendSmsResponse internalSendSmsResponse){
         return new SendSmsResponse(

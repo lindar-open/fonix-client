@@ -4,21 +4,22 @@ package lindar.fonix.api;
  * Created by Steven on 14/03/2017.
  */
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import lindar.fonix.api.builder.CarrierBilling;
+import lindar.fonix.util.FonixTranslator;
+import lindar.fonix.vo.CarrierBilling;
 import lindar.fonix.exception.FonixBadRequestException;
 import lindar.fonix.exception.FonixException;
 import lindar.fonix.exception.FonixNotAuthorizedException;
 import lindar.fonix.exception.FonixUnexpectedErrorException;
 import lindar.fonix.vo.CarrierBillingResponse;
+import lindar.fonix.vo.ChargeReport;
 import lindar.fonix.vo.internal.InternalCarrierBillingResponse;
-import lindar.fonix.vo.internal.InternalFailureResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.spauny.joy.wellrested.fluid.WellRestedRequest;
 import org.spauny.joy.wellrested.vo.ResponseVO;
 
 import java.util.List;
@@ -31,13 +32,23 @@ import java.util.Map;
  *
  */
 @Slf4j
-public class FonixCarrierBillingResource {
+public class FonixCarrierBillingResource extends BaseFonixResource{
 
-    private final String API_KEY_HEADER = "X-API-KEY";
-    private final String sendSmsUrl = "https://sonar.fonix.io/v2/sendsms";
+    private final FonixTranslator translator;
+
+    private final String CHARGE_MOBILE_ENDPOINT = "chargemobile";
+
+    private final String CR_VERSION = "IFVERSION";
+    private final String CR_CHARGE_METHOD = "CHARGEMETHOD";
+    private final String CR_MOBILE_NUMBER = "MONUMBER";
+    private final String CR_OPERATOR = "OPERATOR";
+    private final String CR_GUID = "GUID";
+    private final String CR_DURATION = "DURATION";
+    private final String CR_RETRY_COUNT = "RETRYCOUNT";
+    private final String CR_STATUS_CODE = "STATUSCODE";
+    private final String CR_STATUS_TEXT = "STATUSTEXT";
 
 
-    private final boolean dummyMode;
 
     private Map<String, String> authenticationHeaders;
 
@@ -46,8 +57,8 @@ public class FonixCarrierBillingResource {
      *
      * @see FonixSmsResource(String, boolean)
      */
-    public FonixCarrierBillingResource(String apiKey) {
-        this(apiKey, false);
+    public FonixCarrierBillingResource(String apiKey, FonixTranslator fonixTranslator) {
+        this(apiKey, fonixTranslator, false);
     }
 
     /**
@@ -56,20 +67,44 @@ public class FonixCarrierBillingResource {
      * @param apiKey apikey provided by fonix to authenticate with their services
      * @param dummyMode when true api calls will run in dummy mode (no action taken) unless the dummy mode is otherwise specified
      */
-    public FonixCarrierBillingResource(String apiKey, boolean dummyMode) {
-        this.dummyMode = dummyMode;
-        this.authenticationHeaders = ImmutableMap.<String, String>builder().put(API_KEY_HEADER, apiKey).build();
+    public FonixCarrierBillingResource(String apiKey, FonixTranslator fonixTranslator, boolean dummyMode) {
+        super(apiKey, dummyMode);
+        this.translator = fonixTranslator;
+    }
+
+    public ChargeReport parseChargeReport(Map<String, String> mapParameters){
+        ChargeReport chargeReport = new ChargeReport();
+
+        chargeReport.setMobileNumber(mapParameters.get(CR_MOBILE_NUMBER));
+        chargeReport.setGuid(mapParameters.get(CR_GUID));
+        chargeReport.setVersion(mapParameters.get(CR_VERSION));
+
+        chargeReport.setOperator(mapParameters.get(CR_OPERATOR));
+        chargeReport.setStatusCode(mapParameters.get(CR_STATUS_CODE));
+        chargeReport.setChargeMethod(mapParameters.get(CR_CHARGE_METHOD));
+
+        if(NumberUtils.isParsable(mapParameters.get(CR_DURATION))){
+            chargeReport.setDuration(Integer.parseInt(mapParameters.get(CR_DURATION)));
+        }
+
+        if(NumberUtils.isParsable(mapParameters.get(CR_RETRY_COUNT))){
+            chargeReport.setRetryCount(Integer.parseInt(mapParameters.get(CR_RETRY_COUNT)));
+        }
+
+        chargeReport.setStatusText(translator.translateChargeReportStatusText(chargeReport.getOperator(), chargeReport.getStatusCode(), mapParameters.get(CR_STATUS_TEXT)));
+
+        return chargeReport;
     }
 
 
     /**
-     * Works just like {@link FonixCarrierBillingResource#charge(CarrierBilling, boolean)} except dummyMode will be set
+     * Works just like {@link FonixCarrierBillingResource#chargeMobile(CarrierBilling, boolean)} except dummyMode will be set
      * according to the default dummyMode preference
      *
-     * @see FonixCarrierBillingResource#charge(CarrierBilling, boolean)
+     * @see FonixCarrierBillingResource#chargeMobile(CarrierBilling, boolean)
      */
-    public CarrierBillingResponse charge(CarrierBilling carrierBilling) throws FonixException {
-        return charge(carrierBilling, dummyMode);
+    public CarrierBillingResponse chargeMobile(CarrierBilling carrierBilling) throws FonixException {
+        return chargeMobile(carrierBilling, dummyMode);
     }
 
     /**
@@ -85,7 +120,7 @@ public class FonixCarrierBillingResource {
      *
      * @return details of the carrier billing request
      */
-    public CarrierBillingResponse charge(CarrierBilling carrierBilling, boolean dummyMode) throws FonixException {
+    public CarrierBillingResponse chargeMobile(CarrierBilling carrierBilling, boolean dummyMode) throws FonixException {
 
         List<NameValuePair> formParams = buildFormParams(carrierBilling);
 
@@ -93,7 +128,7 @@ public class FonixCarrierBillingResource {
             formParams.add(new BasicNameValuePair("DUMMY", "yes"));
         }
 
-        ResponseVO responseVO = WellRestedRequest.build(sendSmsUrl).post(formParams, authenticationHeaders);
+        ResponseVO responseVO = doRequest(formParams, CHARGE_MOBILE_ENDPOINT);
 
         if (responseVO.getStatusCode() != 200) {
             throwExceptionFromResponse(responseVO);
@@ -109,7 +144,7 @@ public class FonixCarrierBillingResource {
         formParams.add(new BasicNameValuePair("ORIGINATOR", carrierBilling.getFrom()));
         formParams.add(new BasicNameValuePair("CHARGEDESCRIPTION", carrierBilling.getChargeDescription()));
 
-        validateAmountIfNeeded(carrierBilling.getAmountInPence());
+        validateAmount(carrierBilling.getAmountInPence());
 
         formParams.add(new BasicNameValuePair("AMOUNT", String.valueOf(carrierBilling.getAmountInPence())));
 
@@ -121,34 +156,13 @@ public class FonixCarrierBillingResource {
             formParams.add(new BasicNameValuePair("TIMETOLIVE", String.valueOf(carrierBilling.getTtl())));
         }
 
-        if(carrierBilling.getChargeSilently() != null && carrierBilling.getChargeSilently() == true){
-            formParams.add(new BasicNameValuePair("CHARGESILENT", "no"));
+        formParams.add(new BasicNameValuePair("CHARGESILENT", "no"));
+
+        if(BooleanUtils.isTrue(carrierBilling.getSmsFallback())){
+            formParams.add(new BasicNameValuePair("SMSFALLBACK", "yes"));
         }
 
         return formParams;
     }
 
-    private void validateAmountIfNeeded(int amountInPence) throws FonixBadRequestException {
-        if(amountInPence <= 0){
-            throw new FonixBadRequestException("INVALID_AMOUNT", "Amount must be greater than 0");
-        }
-
-        if(amountInPence > 0 && (float)amountInPence % 100.f > 0){
-            log.warn("Not all providers support billing in penny increments");
-        }
-    }
-
-    private void throwExceptionFromResponse(ResponseVO responseVO) throws FonixException {
-
-        if(responseVO.getStatusCode() == 400){
-            InternalFailureResponse internalFailureResponse = responseVO.castJsonResponse(InternalFailureResponse.class);
-            throw new FonixBadRequestException(internalFailureResponse.getFailure().getFailcode(), internalFailureResponse.getFailure().getParameter());
-        }
-
-        if(responseVO.getStatusCode() == 403){
-            throw new FonixNotAuthorizedException();
-        }
-
-        throw new FonixUnexpectedErrorException(responseVO.getStatusCode(), responseVO.getServerResponse());
-    }
 }

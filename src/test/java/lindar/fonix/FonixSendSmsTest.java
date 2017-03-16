@@ -18,7 +18,7 @@ import org.junit.rules.ExpectedException;
 /**
  * Created by Steven on 09/03/2017.
  */
-public class FonixSmsTest {
+public class FonixSendSmsTest {
 
     private final String FAKE_VALID_MOBILE_NUMBER = "447700900809";
 

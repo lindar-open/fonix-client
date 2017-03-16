@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>lindar</groupId>
+    <groupId>com.lindar</groupId>
     <artifactId>fonix-client</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     
@@ -66,9 +66,9 @@
         </dependency>
         
         <dependency>
-            <groupId>org.spauny.joy</groupId>
+            <groupId>com.lindar</groupId>
             <artifactId>well-rested-client</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -91,8 +91,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.3</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
         </plugins>

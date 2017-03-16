@@ -1,11 +1,7 @@
-package lindar.fonix.api.builder;
+package lindar.fonix.vo;
 
 
-import lindar.fonix.exception.FonixBadRequestException;
-import lindar.fonix.exception.FonixNotAuthorizedException;
-import lindar.fonix.exception.FonixUnexpectedErrorException;
 import lombok.Getter;
-import lombok.NonNull;
 
 /**
  * Created by Steven on 14/03/2017.
@@ -29,6 +25,8 @@ public class CarrierBilling {
     private Integer ttl;
     @Getter
     private String currency;
+    @Getter
+    private Boolean smsFallback;
 
     private CarrierBilling(Builder builder){
         this.mobileNumber = builder.mobileNumber;
@@ -40,6 +38,7 @@ public class CarrierBilling {
         this.requestId = builder.requestId;
         this.ttl = builder.ttl;
         this.currency = builder.currency;
+        this.smsFallback = builder.smsFallback;
     }
 
     public static class Builder {
@@ -52,50 +51,16 @@ public class CarrierBilling {
         private String requestId;
         private Integer ttl;
         private String currency;
+        private Boolean smsFallback;
 
-        public Builder(String mobileNumber, int amountInPence, String from, String chargeDescription){
+        public Builder(String mobileNumber, int amountInPence, String from, String chargeDescription, String smsBody){
             this.mobileNumber = mobileNumber;
             this.amountInPence = amountInPence;
             this.from = from;
             this.chargeDescription = chargeDescription;
+            this.body = smsBody;
         }
 
-        /**
-         * Send a sms to the recipient being charged
-         *
-         * @param body the sms content to send to the recipient being charged
-         *
-         * @return the builder to keep on building
-         */
-        public Builder withSms(String body){
-            this.body = body;
-            this.chargeSilently = false;
-            return this;
-        }
-
-        /**
-         * Send a sms to the recipient being charged with the default sms content
-         * Default sms content:
-         *      You have been charged £nn.nn for your selected product or service
-         *
-         * @return the builder to keep on building
-         */
-        public Builder withDefaultSms(){
-            this.body = null;
-            this.chargeSilently = false;
-            return this;
-        }
-
-        /**
-         * Do NOT send a sms to the recipient being charged
-         *
-         * @return the builder to keep on building
-         */
-        public Builder withNoSms(){
-            this.body = null;
-            this.chargeSilently = true;
-            return this;
-        }
 
         /**
          * Set the expiration of the request.
@@ -108,6 +73,17 @@ public class CarrierBilling {
          */
         public Builder withTimeToLive(int ttl){
             this.ttl = ttl;
+            return this;
+        }
+
+
+        /**
+         * Fallback to premium sms charge if carrier billing fails
+         *
+         * @return the builder to keep on building
+         */
+        public Builder withSmsFallback(){
+            this.smsFallback = true;
             return this;
         }
 

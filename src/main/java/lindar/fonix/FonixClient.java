@@ -2,6 +2,7 @@ package lindar.fonix;
 
 import lindar.fonix.api.FonixCarrierBillingResource;
 import lindar.fonix.api.FonixSmsResource;
+import lindar.fonix.util.impl.DefaultFonixTranslator;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -19,7 +20,7 @@ public class FonixClient {
 
     public FonixClient(String apiKey, boolean dummyMode) {
         fonixSmsResource = new FonixSmsResource(apiKey, dummyMode);
-        fonixCarrierBillingResource = new FonixCarrierBillingResource(apiKey, dummyMode);
+        fonixCarrierBillingResource = new FonixCarrierBillingResource(apiKey, new DefaultFonixTranslator(), dummyMode);
 
     }
 

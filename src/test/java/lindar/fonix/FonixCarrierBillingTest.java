@@ -1,11 +1,9 @@
 package lindar.fonix;
 
-import lindar.fonix.api.builder.CarrierBilling;
+import lindar.fonix.vo.CarrierBilling;
 import lindar.fonix.exception.FonixBadRequestException;
 import lindar.fonix.exception.FonixException;
-import lindar.fonix.exception.FonixNotAuthorizedException;
 import lindar.fonix.vo.CarrierBillingResponse;
-import lindar.fonix.vo.SendSmsResponse;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,12 +34,38 @@ public class FonixCarrierBillingTest {
     @Test
     public void validChargeWithSms() throws FonixException {
         CarrierBilling carrierBilling = new CarrierBilling
-                .Builder(FAKE_VALID_MOBILE_NUMBER, 100, "Demo", "Demo charge from demo")
-                .withSms("You have just been charged by Demo App")
+                .Builder(FAKE_VALID_MOBILE_NUMBER, 100, "Demo", "Demo charge from demo", "You have just been charged by Demo App")
                 .build();
 
-        CarrierBillingResponse charge = fonixClient.carrierBilling().charge(carrierBilling);
+        CarrierBillingResponse charge = fonixClient.carrierBilling().chargeMobile(carrierBilling);
         assertThat(charge, hasProperty("txguid", notNullValue()));
+    }
+
+    @Test
+    public void validChargeWithSmsFallback() throws FonixException {
+        CarrierBilling carrierBilling = new CarrierBilling
+                .Builder(FAKE_VALID_MOBILE_NUMBER, 100, "Demo", "Demo charge from demo", "You have just been charged by Demo App")
+                .withSmsFallback()
+                .build();
+
+        CarrierBillingResponse charge = fonixClient.carrierBilling().chargeMobile(carrierBilling);
+        assertThat(charge, hasProperty("txguid", notNullValue()));
+    }
+
+
+    @Test
+    public void invalidTimeToLive() throws FonixException {
+
+        thrown.expect(FonixBadRequestException.class);
+        thrown.expect(hasProperty("errorCode", is("OUT_OF_RANGE")));
+        thrown.expect(hasProperty("parameter", is("TIMETOLIVE")));
+
+        CarrierBilling carrierBilling = new CarrierBilling
+                .Builder(FAKE_VALID_MOBILE_NUMBER, 100, "Demo", "Demo charge from demo", "You have just been charged by Demo App")
+                .withTimeToLive(5)
+                .build();
+
+        fonixClient.carrierBilling().chargeMobile(carrierBilling);
     }
 
 }
