@@ -6,6 +6,7 @@ import com.google.common.collect.Multimap;
 import lombok.Data;
 
 import java.beans.Transient;
+import java.util.Date;
 
 /**
  * Created by Steven on 15/03/2017.
@@ -57,6 +58,18 @@ public class ChargeReport {
     * A description to provide more information about the status code.
     */
     private String statusText;
+
+    /*
+    * If you submitted your Charge Mobile request with a unique request id,
+    * this field will contain it in return to help you identify the charge.
+    */
+    private String requestId;
+
+    /*
+    * Timestamp when the Charge Report was created
+    */
+    private Date statusTime;
+
 
 
     public boolean wasChargedSuccessfully(){

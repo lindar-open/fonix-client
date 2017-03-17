@@ -16,8 +16,6 @@ public class CarrierBilling {
     @Getter
     private String chargeDescription;
     @Getter
-    private Boolean chargeSilently;
-    @Getter
     private String body;
     @Getter
     private String requestId;
@@ -33,7 +31,6 @@ public class CarrierBilling {
         this.amountInPence = builder.amountInPence;
         this.from = builder.from;
         this.chargeDescription = builder.chargeDescription;
-        this.chargeSilently = builder.chargeSilently;
         this.body = builder.body;
         this.requestId = builder.requestId;
         this.ttl = builder.ttl;
@@ -46,7 +43,6 @@ public class CarrierBilling {
         private int amountInPence;
         private String from;
         private String chargeDescription;
-        private Boolean chargeSilently;
         private String body;
         private String requestId;
         private Integer ttl;

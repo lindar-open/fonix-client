@@ -22,6 +22,8 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +49,10 @@ public class FonixCarrierBillingResource extends BaseFonixResource{
     private final String CR_RETRY_COUNT = "RETRYCOUNT";
     private final String CR_STATUS_CODE = "STATUSCODE";
     private final String CR_STATUS_TEXT = "STATUSTEXT";
+    private final String CR_REQUEST_ID = "REQUESTID";
+    private final String CR_STATUS_TIME = "STATUSTIME";
 
+    private final SimpleDateFormat parseStatusTime = new SimpleDateFormat("yyyyMMddhhmmss");
 
 
     private Map<String, String> authenticationHeaders;
@@ -72,6 +77,13 @@ public class FonixCarrierBillingResource extends BaseFonixResource{
         this.translator = fonixTranslator;
     }
 
+    /**
+     * Parse map of values (from request) into a charge report
+     *
+     * @param mapParameters should contain the parameters sent from the fonix server
+     **
+     * @return the fully build charge report
+     */
     public ChargeReport parseChargeReport(Map<String, String> mapParameters){
         ChargeReport chargeReport = new ChargeReport();
 
@@ -82,6 +94,7 @@ public class FonixCarrierBillingResource extends BaseFonixResource{
         chargeReport.setOperator(mapParameters.get(CR_OPERATOR));
         chargeReport.setStatusCode(mapParameters.get(CR_STATUS_CODE));
         chargeReport.setChargeMethod(mapParameters.get(CR_CHARGE_METHOD));
+        chargeReport.setRequestId(mapParameters.get(CR_REQUEST_ID));
 
         if(NumberUtils.isParsable(mapParameters.get(CR_DURATION))){
             chargeReport.setDuration(Integer.parseInt(mapParameters.get(CR_DURATION)));
@@ -89,6 +102,12 @@ public class FonixCarrierBillingResource extends BaseFonixResource{
 
         if(NumberUtils.isParsable(mapParameters.get(CR_RETRY_COUNT))){
             chargeReport.setRetryCount(Integer.parseInt(mapParameters.get(CR_RETRY_COUNT)));
+        }
+
+        try {
+            chargeReport.setStatusTime(parseStatusTime.parse(mapParameters.get(CR_STATUS_TIME)));
+        } catch (ParseException e) {
+            log.error("unable to parse status time from string {}", mapParameters.get(CR_STATUS_TIME));
         }
 
         chargeReport.setStatusText(translator.translateChargeReportStatusText(chargeReport.getOperator(), chargeReport.getStatusCode(), mapParameters.get(CR_STATUS_TEXT)));

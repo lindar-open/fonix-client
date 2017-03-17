@@ -6,15 +6,22 @@ import lindar.fonix.exception.FonixBadRequestException;
 import lindar.fonix.exception.FonixException;
 import lindar.fonix.exception.FonixNotAuthorizedException;
 import lindar.fonix.exception.FonixUnexpectedErrorException;
+import lindar.fonix.vo.ChargeReport;
 import lindar.fonix.vo.ChargeSmsResponse;
+import lindar.fonix.vo.DeliveryReport;
 import lindar.fonix.vo.SendSmsResponse;
 import lindar.fonix.vo.internal.InternalChargeSmsResponse;
 import lindar.fonix.vo.internal.InternalSendSmsResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Api for dealing with SMS on the Fonix Platform
@@ -27,6 +34,21 @@ public class FonixSmsResource extends BaseFonixResource {
 
     private final String SEND_SMS_ENDPOINT = "sendsms";
     private final String CHARGE_SMS_ENDPOINT = "chargesms";
+
+    private final SimpleDateFormat parseStatusTime = new SimpleDateFormat("yyyyMMddhhmmss");
+
+
+    private final String DR_IFVERSION = "IFVERSION";
+    private final String DR_MOBILE_NUMBER = "MONUMBER";
+    private final String DR_DESTINATION = "DESTINATION";
+    private final String DR_OPERATOR = "OPERATOR";
+    private final String DR_GUID = "GUID";
+    private final String DR_DURATION = "DURATION";
+    private final String DR_RETRY_COUNT = "RETRYCOUNT";
+    private final String DR_STATUS_CODE = "STATUSCODE";
+    private final String DR_STATUS_TEXT = "STATUSTEXT";
+    private final String DR_STATUS_TIME = "STATUSTIME";
+    private final String DR_RECEIVE_TIME = "RECEIVETIME";
 
 
     /**
@@ -136,6 +158,50 @@ public class FonixSmsResource extends BaseFonixResource {
         }
 
         return ChargeSmsResponse.from(responseVO.castJsonResponse(InternalChargeSmsResponse.class));
+    }
+
+
+    /**
+     * Parse map of values (from request) into a delivery report
+     *
+     * @param mapParameters should contain the parameters sent from the fonix server
+     **
+     * @return the fully build delivery report
+     */
+    public DeliveryReport parseDeliveryReport(Map<String, String> mapParameters){
+        DeliveryReport deliveryReport = new DeliveryReport();
+
+        deliveryReport.setMobileNumber(mapParameters.get(DR_MOBILE_NUMBER));
+        deliveryReport.setGuid(mapParameters.get(DR_GUID));
+        deliveryReport.setIfVersion(mapParameters.get(DR_IFVERSION));
+
+        deliveryReport.setOperator(mapParameters.get(DR_OPERATOR));
+        deliveryReport.setStatusCode(mapParameters.get(DR_STATUS_CODE));
+
+
+        if(NumberUtils.isParsable(mapParameters.get(DR_DURATION))){
+            deliveryReport.setDuration(Integer.parseInt(mapParameters.get(DR_DURATION)));
+        }
+
+        if(NumberUtils.isParsable(mapParameters.get(DR_RETRY_COUNT))){
+            deliveryReport.setRetryCount(Integer.parseInt(mapParameters.get(DR_RETRY_COUNT)));
+        }
+
+        try {
+            deliveryReport.setStatusTime(parseStatusTime.parse(mapParameters.get(DR_STATUS_TIME)));
+        } catch (ParseException e) {
+            log.error("unable to parse status time from string {}", mapParameters.get(DR_STATUS_TIME));
+        }
+
+        try {
+            deliveryReport.setReceiveTime(parseStatusTime.parse(mapParameters.get(DR_RECEIVE_TIME)));
+        } catch (ParseException e) {
+            log.error("unable to parse receive time from string {}", mapParameters.get(DR_RECEIVE_TIME));
+        }
+
+        deliveryReport.setStatusText(mapParameters.get(DR_STATUS_TEXT));
+
+        return deliveryReport;
     }
 
 }
