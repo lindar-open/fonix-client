@@ -24,6 +24,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -75,6 +76,15 @@ public class FonixCarrierBillingResource extends BaseFonixResource{
     public FonixCarrierBillingResource(String apiKey, FonixTranslator fonixTranslator, boolean dummyMode) {
         super(apiKey, dummyMode);
         this.translator = fonixTranslator;
+    }
+
+    /**
+     * Get all ip addresses valid for the origin of a charge report request
+     *
+     * @return a list of valid ip addresses
+     */
+    public List<String> getChargeReportValidIpAddresses(){
+        return Arrays.asList("54.194.146.155", "54.194.13.190");
     }
 
     /**
@@ -179,6 +189,11 @@ public class FonixCarrierBillingResource extends BaseFonixResource{
 
         if(BooleanUtils.isTrue(carrierBilling.getSmsFallback())){
             formParams.add(new BasicNameValuePair("SMSFALLBACK", "yes"));
+        }
+
+        if(StringUtils.isNotBlank(carrierBilling.getRequestId())){
+            formParams.add(new BasicNameValuePair("REQUESTID", carrierBilling.getRequestId()));
+
         }
 
         return formParams;
