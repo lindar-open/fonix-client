@@ -5,7 +5,7 @@ package lindar.fonix.api;
  */
 
 import com.google.common.collect.Lists;
-import com.lindar.wellrested.vo.ResponseVO;
+import com.lindar.wellrested.vo.WellRestedResponse;
 import lindar.fonix.util.FonixTranslator;
 import lindar.fonix.vo.CarrierBilling;
 import lindar.fonix.exception.FonixBadRequestException;
@@ -157,13 +157,13 @@ public class FonixCarrierBillingResource extends BaseFonixResource{
             formParams.add(new BasicNameValuePair("DUMMY", "yes"));
         }
 
-        ResponseVO responseVO = doRequest(formParams, CHARGE_MOBILE_ENDPOINT);
+        WellRestedResponse responseVO = doRequest(formParams, CHARGE_MOBILE_ENDPOINT);
 
         if (responseVO.getStatusCode() != 200) {
             throwExceptionFromResponse(responseVO);
         }
 
-        return CarrierBillingResponse.from(responseVO.castJsonResponse(InternalCarrierBillingResponse.class));
+        return CarrierBillingResponse.from(responseVO.fromJson().castTo(InternalCarrierBillingResponse.class));
     }
 
     private List<NameValuePair> buildFormParams(CarrierBilling carrierBilling) throws FonixException {

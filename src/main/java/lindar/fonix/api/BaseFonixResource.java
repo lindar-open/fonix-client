@@ -2,7 +2,7 @@ package lindar.fonix.api;
 
 import com.google.common.collect.ImmutableMap;
 import com.lindar.wellrested.WellRestedRequest;
-import com.lindar.wellrested.vo.ResponseVO;
+import com.lindar.wellrested.vo.WellRestedResponse;
 import lindar.fonix.exception.FonixBadRequestException;
 import lindar.fonix.exception.FonixException;
 import lindar.fonix.exception.FonixNotAuthorizedException;
@@ -14,9 +14,6 @@ import org.apache.http.NameValuePair;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by Steven on 16/03/2017.
- */
 @Slf4j
 public abstract class BaseFonixResource {
 
@@ -32,7 +29,7 @@ public abstract class BaseFonixResource {
         this.authenticationHeaders = ImmutableMap.<String, String>builder().put(API_KEY_HEADER, apiKey).build();
     }
 
-    protected final ResponseVO doRequest(List<NameValuePair> formParams, String endpoint){
+    protected final WellRestedResponse doRequest(List<NameValuePair> formParams, String endpoint){
         return WellRestedRequest.build(BASE_URL + endpoint).post(formParams, authenticationHeaders);
     }
 
@@ -46,10 +43,10 @@ public abstract class BaseFonixResource {
         }
     }
 
-    protected void throwExceptionFromResponse(ResponseVO responseVO) throws FonixException {
+    protected void throwExceptionFromResponse(WellRestedResponse responseVO) throws FonixException {
 
         if(responseVO.getStatusCode() == 400){
-            InternalFailureResponse internalFailureResponse = responseVO.castJsonResponse(InternalFailureResponse.class);
+            InternalFailureResponse internalFailureResponse = responseVO.fromJson().castTo(InternalFailureResponse.class);
             throw new FonixBadRequestException(internalFailureResponse.getFailure().getFailcode(), internalFailureResponse.getFailure().getParameter());
         }
 

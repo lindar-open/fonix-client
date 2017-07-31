@@ -1,12 +1,11 @@
 package lindar.fonix.api;
 
 import com.google.common.collect.Lists;
-import com.lindar.wellrested.vo.ResponseVO;
+import com.lindar.wellrested.vo.WellRestedResponse;
 import lindar.fonix.exception.FonixBadRequestException;
 import lindar.fonix.exception.FonixException;
 import lindar.fonix.exception.FonixNotAuthorizedException;
 import lindar.fonix.exception.FonixUnexpectedErrorException;
-import lindar.fonix.vo.ChargeReport;
 import lindar.fonix.vo.ChargeSmsResponse;
 import lindar.fonix.vo.DeliveryReport;
 import lindar.fonix.vo.SendSmsResponse;
@@ -19,7 +18,6 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -107,13 +105,13 @@ public class FonixSmsResource extends BaseFonixResource {
             formParams.add(new BasicNameValuePair("DUMMY", "yes"));
         }
 
-        ResponseVO responseVO = doRequest(formParams, SEND_SMS_ENDPOINT);
+        WellRestedResponse responseVO = doRequest(formParams, SEND_SMS_ENDPOINT);
 
         if (responseVO.getStatusCode() != 200) {
             throwExceptionFromResponse(responseVO);
         }
 
-        return SendSmsResponse.from(responseVO.castJsonResponse(InternalSendSmsResponse.class));
+        return SendSmsResponse.from(responseVO.fromJson().castTo(InternalSendSmsResponse.class));
     }
 
     /**
@@ -151,13 +149,13 @@ public class FonixSmsResource extends BaseFonixResource {
             formParams.add(new BasicNameValuePair("DUMMY", "yes"));
         }
 
-        ResponseVO responseVO = doRequest(formParams, CHARGE_SMS_ENDPOINT);
+        WellRestedResponse responseVO = doRequest(formParams, CHARGE_SMS_ENDPOINT);
 
         if (responseVO.getStatusCode() != 200) {
             throwExceptionFromResponse(responseVO);
         }
 
-        return ChargeSmsResponse.from(responseVO.castJsonResponse(InternalChargeSmsResponse.class));
+        return ChargeSmsResponse.from(responseVO.fromJson().castTo(InternalChargeSmsResponse.class));
     }
 
 
