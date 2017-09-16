@@ -6,7 +6,7 @@
 
     <groupId>com.lindar</groupId>
     <artifactId>fonix-client</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     
     <name>Fonix Java Client</name>
     <description>A java clinet for Fonix</description>
@@ -73,13 +73,13 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>22.0</version>
+            <version>23.0</version>
         </dependency>
 
         <dependency>
             <groupId>com.lindar</groupId>
             <artifactId>well-rested-client</artifactId>
-            <version>1.2.0</version>
+            <version>1.3.0</version>
         </dependency>
 
         <dependency>

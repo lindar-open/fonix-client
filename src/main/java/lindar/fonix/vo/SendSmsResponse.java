@@ -1,14 +1,11 @@
 package lindar.fonix.vo;
 
 import lindar.fonix.vo.internal.InternalSendSmsResponse;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
-/**
- * Created by Steven on 10/03/2017.
- */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class SendSmsResponse extends BaseSmsResponse{
 
     public SendSmsResponse(String txguid, String numbers, String smsparts, String encoding) {
