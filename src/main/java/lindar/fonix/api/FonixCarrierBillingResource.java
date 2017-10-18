@@ -1,9 +1,5 @@
 package lindar.fonix.api;
 
-/**
- * Created by Steven on 14/03/2017.
- */
-
 import com.google.common.collect.Lists;
 import com.lindar.wellrested.vo.WellRestedResponse;
 import lindar.fonix.util.FonixTranslator;
@@ -30,12 +26,9 @@ import java.util.Map;
 
 /**
  * Api for dealing with SMS on the Fonix Platform
- *
- * Created by Steven on 09/03/2017.
- *
  */
 @Slf4j
-public class FonixCarrierBillingResource extends BaseFonixResource{
+public class FonixCarrierBillingResource extends BaseFonixResource {
 
     private final FonixTranslator translator;
 
@@ -70,7 +63,7 @@ public class FonixCarrierBillingResource extends BaseFonixResource{
     /**
      * Constructor
      *
-     * @param apiKey apikey provided by fonix to authenticate with their services
+     * @param apiKey    apikey provided by fonix to authenticate with their services
      * @param dummyMode when true api calls will run in dummy mode (no action taken) unless the dummy mode is otherwise specified
      */
     public FonixCarrierBillingResource(String apiKey, FonixTranslator fonixTranslator, boolean dummyMode) {
@@ -83,7 +76,7 @@ public class FonixCarrierBillingResource extends BaseFonixResource{
      *
      * @return a list of valid ip addresses
      */
-    public List<String> getChargeReportValidIpAddresses(){
+    public List<String> getChargeReportValidIpAddresses() {
         return Arrays.asList("54.194.146.155", "54.194.13.190");
     }
 
@@ -91,10 +84,10 @@ public class FonixCarrierBillingResource extends BaseFonixResource{
      * Parse map of values (from request) into a charge report
      *
      * @param mapParameters should contain the parameters sent from the fonix server
-     **
+     *                      *
      * @return the fully build charge report
      */
-    public ChargeReport parseChargeReport(Map<String, String> mapParameters){
+    public ChargeReport parseChargeReport(Map<String, String> mapParameters) {
         ChargeReport chargeReport = new ChargeReport();
 
         chargeReport.setMobileNumber(mapParameters.get(CR_MOBILE_NUMBER));
@@ -106,11 +99,11 @@ public class FonixCarrierBillingResource extends BaseFonixResource{
         chargeReport.setChargeMethod(mapParameters.get(CR_CHARGE_METHOD));
         chargeReport.setRequestId(mapParameters.get(CR_REQUEST_ID));
 
-        if(NumberUtils.isParsable(mapParameters.get(CR_DURATION))){
+        if (NumberUtils.isParsable(mapParameters.get(CR_DURATION))) {
             chargeReport.setDuration(Integer.parseInt(mapParameters.get(CR_DURATION)));
         }
 
-        if(NumberUtils.isParsable(mapParameters.get(CR_RETRY_COUNT))){
+        if (NumberUtils.isParsable(mapParameters.get(CR_RETRY_COUNT))) {
             chargeReport.setRetryCount(Integer.parseInt(mapParameters.get(CR_RETRY_COUNT)));
         }
 
@@ -140,22 +133,22 @@ public class FonixCarrierBillingResource extends BaseFonixResource{
      * Send SMS
      *
      * @param carrierBilling details of the carrier billing
-     *                       @see CarrierBilling
-     * @param dummyMode when dummyMode is true the message will not actually be sent
-     *
-     * @throws FonixBadRequestException if there is a problem with the values sent in the request
-     * @throws FonixNotAuthorizedException if authentication fails
-     * @throws FonixUnexpectedErrorException if a unexpected error occurs on the Fonix platform
-     *
+     * @param dummyMode      when dummyMode is true the message will not actually be sent
      * @return details of the carrier billing request
+     * @throws FonixBadRequestException      if there is a problem with the values sent in the request
+     * @throws FonixNotAuthorizedException   if authentication fails
+     * @throws FonixUnexpectedErrorException if a unexpected error occurs on the Fonix platform
+     * @see CarrierBilling
      */
     public CarrierBillingResponse chargeMobile(CarrierBilling carrierBilling, boolean dummyMode) throws FonixException {
 
         List<NameValuePair> formParams = buildFormParams(carrierBilling);
 
-        if(dummyMode){
+        if (dummyMode) {
             formParams.add(new BasicNameValuePair("DUMMY", "yes"));
         }
+
+        log.info("chargeMobile: form params: {}", formParams);
 
         WellRestedResponse responseVO = doRequest(formParams, CHARGE_MOBILE_ENDPOINT);
 
@@ -177,23 +170,31 @@ public class FonixCarrierBillingResource extends BaseFonixResource{
 
         formParams.add(new BasicNameValuePair("AMOUNT", String.valueOf(carrierBilling.getAmountInPence())));
 
-        if(StringUtils.isNotBlank(carrierBilling.getBody())){
+        if (StringUtils.isNotBlank(carrierBilling.getBody())) {
             formParams.add(new BasicNameValuePair("BODY", carrierBilling.getBody()));
         }
 
-        if(carrierBilling.getTtl() != null){
+        if (carrierBilling.getTtl() != null) {
             formParams.add(new BasicNameValuePair("TIMETOLIVE", String.valueOf(carrierBilling.getTtl())));
         }
 
         formParams.add(new BasicNameValuePair("CHARGESILENT", "no"));
 
-        if(BooleanUtils.isTrue(carrierBilling.getSmsFallback())){
+        if (BooleanUtils.isTrue(carrierBilling.getSmsFallback())) {
             formParams.add(new BasicNameValuePair("SMSFALLBACK", "yes"));
         }
 
-        if(StringUtils.isNotBlank(carrierBilling.getRequestId())){
-            formParams.add(new BasicNameValuePair("REQUESTID", carrierBilling.getRequestId()));
+        if (BooleanUtils.isTrue(carrierBilling.getNoRetry())) {
+            formParams.add(new BasicNameValuePair("NORETRY", "yes"));
+        }
 
+        // we explicitly check if this was set to false and not just null
+        if (BooleanUtils.isFalse(carrierBilling.getNetworkRetry())) {
+            formParams.add(new BasicNameValuePair("NETWORKRETRY", "no"));
+        }
+
+        if (StringUtils.isNotBlank(carrierBilling.getRequestId())) {
+            formParams.add(new BasicNameValuePair("REQUESTID", carrierBilling.getRequestId()));
         }
 
         return formParams;
