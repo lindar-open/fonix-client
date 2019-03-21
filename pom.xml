@@ -6,7 +6,7 @@
 
     <groupId>com.lindar</groupId>
     <artifactId>fonix-client</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     
     <name>Fonix Java Client</name>
     <description>A java clinet for Fonix</description>
@@ -36,12 +36,12 @@
 
     <distributionManagement>
         <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <id>lindar-maven-repo</id>
+            <url>http://nexus-lindar.mircloud.host/content/repositories/lindar-maven-repo/</url>
         </snapshotRepository>
         <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+            <id>lindar-maven-repo-release</id>
+            <url>http://nexus-lindar.mircloud.host/content/repositories/lindar-maven-repo-release/</url>
         </repository>
     </distributionManagement>
 
