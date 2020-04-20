@@ -1,14 +1,16 @@
 package lindar.fonix.api;
 
-import com.google.common.collect.ImmutableMap;
 import com.lindar.wellrested.WellRestedRequest;
 import com.lindar.wellrested.vo.WellRestedResponse;
+import lindar.acolyte.util.MapsAcolyte;
+import lindar.acolyte.vo.Pair;
 import lindar.fonix.exception.FonixBadRequestException;
 import lindar.fonix.exception.FonixException;
 import lindar.fonix.exception.FonixNotAuthorizedException;
 import lindar.fonix.exception.FonixUnexpectedErrorException;
 import lindar.fonix.vo.internal.InternalFailureResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 
 import java.util.List;
@@ -18,19 +20,21 @@ import java.util.Map;
 abstract class BaseFonixResource {
 
     private final String API_KEY_HEADER = "X-API-KEY";
-    private final String BASE_URL = "https://sonar.fonix.io/v2/";
+    private final String BASE_URL = "https://sonar-fixed.fonix.io/v2/";
 
     final boolean dummyMode;
+    final String baseUrl;
 
     private Map<String, String> authenticationHeaders;
 
-    BaseFonixResource(String apiKey, boolean dummyMode) {
+    BaseFonixResource(String baseUrl, String apiKey, boolean dummyMode) {
+        this.baseUrl = StringUtils.defaultIfBlank(baseUrl, BASE_URL);
         this.dummyMode = dummyMode;
-        this.authenticationHeaders = ImmutableMap.<String, String>builder().put(API_KEY_HEADER, apiKey).build();
+        this.authenticationHeaders = MapsAcolyte.mapOf(Pair.of(API_KEY_HEADER, apiKey));
     }
 
     final WellRestedResponse doRequest(List<NameValuePair> formParams, String endpoint) {
-        return WellRestedRequest.builder().url(BASE_URL + endpoint).globalHeaders(authenticationHeaders).build()
+        return WellRestedRequest.builder().url(baseUrl + endpoint).globalHeaders(authenticationHeaders).build()
                 .post().formParams(formParams).submit();
     }
 

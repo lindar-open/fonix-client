@@ -1,6 +1,5 @@
 package lindar.fonix.api;
 
-import com.google.common.collect.Lists;
 import com.lindar.wellrested.vo.WellRestedResponse;
 import lindar.fonix.util.FonixTranslator;
 import lindar.fonix.vo.CarrierBilling;
@@ -20,6 +19,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -52,22 +52,13 @@ public class FonixCarrierBillingResource extends BaseFonixResource {
     private Map<String, String> authenticationHeaders;
 
     /**
-     * Works just like {@link FonixSmsResource(String, boolean)} except by default dummyMode will be set to false
-     *
-     * @see FonixSmsResource(String, boolean)
-     */
-    public FonixCarrierBillingResource(String apiKey, FonixTranslator fonixTranslator) {
-        this(apiKey, fonixTranslator, false);
-    }
-
-    /**
      * Constructor
      *
      * @param apiKey    apikey provided by fonix to authenticate with their services
      * @param dummyMode when true api calls will run in dummy mode (no action taken) unless the dummy mode is otherwise specified
      */
-    public FonixCarrierBillingResource(String apiKey, FonixTranslator fonixTranslator, boolean dummyMode) {
-        super(apiKey, dummyMode);
+    public FonixCarrierBillingResource(String baseUrl, String apiKey, FonixTranslator fonixTranslator, boolean dummyMode) {
+        super(baseUrl, apiKey, dummyMode);
         this.translator = fonixTranslator;
     }
 
@@ -160,7 +151,7 @@ public class FonixCarrierBillingResource extends BaseFonixResource {
     }
 
     private List<NameValuePair> buildFormParams(CarrierBilling carrierBilling) throws FonixException {
-        List<NameValuePair> formParams = Lists.newArrayList();
+        List<NameValuePair> formParams = new ArrayList<>();
 
         formParams.add(new BasicNameValuePair("NUMBERS", carrierBilling.getMobileNumber()));
         formParams.add(new BasicNameValuePair("ORIGINATOR", carrierBilling.getFrom()));

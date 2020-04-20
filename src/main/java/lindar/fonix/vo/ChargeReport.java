@@ -1,16 +1,9 @@
 package lindar.fonix.vo;
 
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.ImmutableTable;
-import com.google.common.collect.Multimap;
 import lombok.Data;
 
-import java.beans.Transient;
 import java.util.Date;
 
-/**
- * Created by Steven on 15/03/2017.
- */
 @Data
 public class ChargeReport {
 

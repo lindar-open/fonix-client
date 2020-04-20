@@ -1,6 +1,5 @@
 package lindar.fonix.api;
 
-import com.google.common.collect.Lists;
 import com.lindar.wellrested.vo.WellRestedResponse;
 import lindar.fonix.exception.FonixBadRequestException;
 import lindar.fonix.exception.FonixException;
@@ -18,6 +17,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,33 +27,24 @@ import java.util.Map;
 @Slf4j
 public class FonixSmsResource extends BaseFonixResource {
 
-    private final String SEND_SMS_ENDPOINT = "sendsms";
+    private final String SEND_SMS_ENDPOINT   = "sendsms";
     private final String CHARGE_SMS_ENDPOINT = "chargesms";
 
     private final SimpleDateFormat parseStatusTime = new SimpleDateFormat("yyyyMMddhhmmss");
 
 
-    private final String DR_IFVERSION = "IFVERSION";
+    private final String DR_IFVERSION     = "IFVERSION";
     private final String DR_MOBILE_NUMBER = "MONUMBER";
-    private final String DR_DESTINATION = "DESTINATION";
-    private final String DR_OPERATOR = "OPERATOR";
-    private final String DR_GUID = "GUID";
-    private final String DR_DURATION = "DURATION";
-    private final String DR_RETRY_COUNT = "RETRYCOUNT";
-    private final String DR_STATUS_CODE = "STATUSCODE";
-    private final String DR_STATUS_TEXT = "STATUSTEXT";
-    private final String DR_STATUS_TIME = "STATUSTIME";
-    private final String DR_RECEIVE_TIME = "RECEIVETIME";
+    private final String DR_DESTINATION   = "DESTINATION";
+    private final String DR_OPERATOR      = "OPERATOR";
+    private final String DR_GUID          = "GUID";
+    private final String DR_DURATION      = "DURATION";
+    private final String DR_RETRY_COUNT   = "RETRYCOUNT";
+    private final String DR_STATUS_CODE   = "STATUSCODE";
+    private final String DR_STATUS_TEXT   = "STATUSTEXT";
+    private final String DR_STATUS_TIME   = "STATUSTIME";
+    private final String DR_RECEIVE_TIME  = "RECEIVETIME";
 
-
-    /**
-     * Works just like {@link FonixSmsResource(String, boolean)} except by default dummyMode will be set to false
-     *
-     * @see FonixSmsResource(String, boolean)
-     */
-    public FonixSmsResource(String apiKey) {
-        this(apiKey, false);
-    }
 
     /**
      * Constructor
@@ -61,8 +52,8 @@ public class FonixSmsResource extends BaseFonixResource {
      * @param apiKey    apikey provided by fonix to authenticate with their services
      * @param dummyMode when true api calls will run in dummy mode (no action taken) unless the dummy mode is otherwise specified
      */
-    public FonixSmsResource(String apiKey, boolean dummyMode) {
-        super(apiKey, dummyMode);
+    public FonixSmsResource(String baseUrl, String apiKey, boolean dummyMode) {
+        super(baseUrl, apiKey, dummyMode);
     }
 
     /**
@@ -91,7 +82,7 @@ public class FonixSmsResource extends BaseFonixResource {
      */
     public SendSmsResponse sendSms(String to, String from, String body, boolean dummyMode) throws FonixException {
 
-        List<NameValuePair> formParams = Lists.newArrayList();
+        List<NameValuePair> formParams = new ArrayList<>();
         formParams.add(new BasicNameValuePair("BODY", body));
         formParams.add(new BasicNameValuePair("ORIGINATOR", from));
         formParams.add(new BasicNameValuePair("NUMBERS", to));
@@ -133,7 +124,7 @@ public class FonixSmsResource extends BaseFonixResource {
      */
     public ChargeSmsResponse chargeSms(String to, String from, String body, boolean dummyMode) throws FonixException {
 
-        List<NameValuePair> formParams = Lists.newArrayList();
+        List<NameValuePair> formParams = new ArrayList<>();
         formParams.add(new BasicNameValuePair("BODY", body));
         formParams.add(new BasicNameValuePair("ORIGINATOR", from));
         formParams.add(new BasicNameValuePair("NUMBERS", to));
