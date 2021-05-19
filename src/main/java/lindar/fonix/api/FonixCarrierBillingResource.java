@@ -99,7 +99,9 @@ public class FonixCarrierBillingResource extends BaseFonixResource {
         }
 
         try {
-            chargeReport.setStatusTime(parseStatusTime.parse(mapParameters.get(CR_STATUS_TIME)));
+            if (mapParameters.containsKey(CR_STATUS_TIME)) {
+                chargeReport.setStatusTime(parseStatusTime.parse(mapParameters.get(CR_STATUS_TIME)));
+            }
         } catch (ParseException e) {
             log.error("unable to parse status time from string {}", mapParameters.get(CR_STATUS_TIME));
         }
