@@ -7,6 +7,7 @@ import lindar.fonix.exception.FonixNotAuthorizedException;
 import lindar.fonix.exception.FonixUnexpectedErrorException;
 import lindar.fonix.vo.ChargeSmsResponse;
 import lindar.fonix.vo.DeliveryReport;
+import lindar.fonix.vo.MobileOriginatedSms;
 import lindar.fonix.vo.SendSmsResponse;
 import lindar.fonix.vo.internal.InternalChargeSmsResponse;
 import lindar.fonix.vo.internal.InternalSendSmsResponse;
@@ -33,17 +34,21 @@ public class FonixSmsResource extends BaseFonixResource {
     private final SimpleDateFormat parseStatusTime = new SimpleDateFormat("yyyyMMddhhmmss");
 
 
-    private final String DR_IFVERSION     = "IFVERSION";
-    private final String DR_MOBILE_NUMBER = "MONUMBER";
-    private final String DR_DESTINATION   = "DESTINATION";
-    private final String DR_OPERATOR      = "OPERATOR";
-    private final String DR_GUID          = "GUID";
-    private final String DR_DURATION      = "DURATION";
-    private final String DR_RETRY_COUNT   = "RETRYCOUNT";
-    private final String DR_STATUS_CODE   = "STATUSCODE";
-    private final String DR_STATUS_TEXT   = "STATUSTEXT";
-    private final String DR_STATUS_TIME   = "STATUSTIME";
-    private final String DR_RECEIVE_TIME  = "RECEIVETIME";
+    private final String IFVERSION     = "IFVERSION";
+    private final String MOBILE_NUMBER = "MONUMBER";
+    private final String DESTINATION   = "DESTINATION";
+    private final String OPERATOR      = "OPERATOR";
+    private final String GUID          = "GUID";
+    private final String DURATION      = "DURATION";
+    private final String PRICE         = "PRICE";
+    private final String RETRY_COUNT   = "RETRYCOUNT";
+    private final String RECEIVE_TIME  = "RECEIVETIME";
+
+    private final String DR_STATUS_CODE = "STATUSCODE";
+    private final String DR_STATUS_TEXT = "STATUSTEXT";
+    private final String DR_STATUS_TIME = "STATUSTIME";
+
+    private final String MO_BODY = "BODY";
 
 
     /**
@@ -153,20 +158,20 @@ public class FonixSmsResource extends BaseFonixResource {
     public DeliveryReport parseDeliveryReport(Map<String, String> mapParameters) {
         DeliveryReport deliveryReport = new DeliveryReport();
 
-        deliveryReport.setMobileNumber(mapParameters.get(DR_MOBILE_NUMBER));
-        deliveryReport.setGuid(mapParameters.get(DR_GUID));
-        deliveryReport.setIfVersion(mapParameters.get(DR_IFVERSION));
+        deliveryReport.setMobileNumber(mapParameters.get(MOBILE_NUMBER));
+        deliveryReport.setGuid(mapParameters.get(GUID));
+        deliveryReport.setIfVersion(mapParameters.get(IFVERSION));
 
-        deliveryReport.setOperator(mapParameters.get(DR_OPERATOR));
+        deliveryReport.setOperator(mapParameters.get(OPERATOR));
         deliveryReport.setStatusCode(mapParameters.get(DR_STATUS_CODE));
 
 
-        if (NumberUtils.isParsable(mapParameters.get(DR_DURATION))) {
-            deliveryReport.setDuration(Integer.parseInt(mapParameters.get(DR_DURATION)));
+        if (NumberUtils.isParsable(mapParameters.get(DURATION))) {
+            deliveryReport.setDuration(Integer.parseInt(mapParameters.get(DURATION)));
         }
 
-        if (NumberUtils.isParsable(mapParameters.get(DR_RETRY_COUNT))) {
-            deliveryReport.setRetryCount(Integer.parseInt(mapParameters.get(DR_RETRY_COUNT)));
+        if (NumberUtils.isParsable(mapParameters.get(RETRY_COUNT))) {
+            deliveryReport.setRetryCount(Integer.parseInt(mapParameters.get(RETRY_COUNT)));
         }
 
         try {
@@ -178,16 +183,55 @@ public class FonixSmsResource extends BaseFonixResource {
         }
 
         try {
-            if (mapParameters.containsKey(DR_RECEIVE_TIME)) {
-                deliveryReport.setReceiveTime(parseStatusTime.parse(mapParameters.get(DR_RECEIVE_TIME)));
+            if (mapParameters.containsKey(RECEIVE_TIME)) {
+                deliveryReport.setReceiveTime(parseStatusTime.parse(mapParameters.get(RECEIVE_TIME)));
             }
         } catch (ParseException e) {
-            log.error("unable to parse receive time from string {}", mapParameters.get(DR_RECEIVE_TIME));
+            log.error("unable to parse receive time from string {}", mapParameters.get(RECEIVE_TIME));
         }
 
         deliveryReport.setStatusText(mapParameters.get(DR_STATUS_TEXT));
 
         return deliveryReport;
+    }
+
+    /**
+     * Parse map of values (from request) into a Mobile Originated Sms
+     * @param mapParameters should contain the parameters sent from the Fonix server
+     * @return the fully built Mobile Originated Sms
+     */
+    public MobileOriginatedSms parseMobileOriginatedSms(Map<String, String> mapParameters) {
+        MobileOriginatedSms moSms = new MobileOriginatedSms();
+
+        moSms.setGuid(mapParameters.get(GUID));
+        moSms.setIfVersion(mapParameters.get(IFVERSION));
+        moSms.setOperator(mapParameters.get(OPERATOR));
+        moSms.setMobileNumber(mapParameters.get(MOBILE_NUMBER));
+        moSms.setDestination(mapParameters.get(DESTINATION));
+
+        try {
+            if (mapParameters.containsKey(RECEIVE_TIME)) {
+                moSms.setReceiveTime(parseStatusTime.parse(mapParameters.get(RECEIVE_TIME)));
+            }
+        } catch (ParseException e) {
+            log.error("unable to parse receive time from string {}", mapParameters.get(RECEIVE_TIME));
+        }
+
+        if (NumberUtils.isParsable(mapParameters.get(PRICE))) {
+            moSms.setPrice(Integer.parseInt(mapParameters.get(PRICE)));
+        }
+
+        if (NumberUtils.isParsable(mapParameters.get(DURATION))) {
+            moSms.setDuration(Integer.parseInt(mapParameters.get(DURATION)));
+        }
+
+        if (NumberUtils.isParsable(mapParameters.get(RETRY_COUNT))) {
+            moSms.setRetryCount(Integer.parseInt(mapParameters.get(RETRY_COUNT)));
+        }
+
+        moSms.setBody(mapParameters.get(MO_BODY));
+
+        return moSms;
     }
 
 }
