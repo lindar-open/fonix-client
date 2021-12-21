@@ -58,3 +58,5 @@ modules.xml
 apidocs/
 target/
 nbactions.xml
+
+.idea/
