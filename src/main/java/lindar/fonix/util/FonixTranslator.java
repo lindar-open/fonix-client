@@ -6,5 +6,5 @@ package lindar.fonix.util;
  */
 public interface FonixTranslator {
     String translateOperatorCode(String operatorCode);
-    String translateChargeReportStatusText(String operatorCode, String statusCode, String defaultError);
+    String translateChargeReportStatusText(String operatorCode, String statusCode, String chargeType, String defaultError);
 }
