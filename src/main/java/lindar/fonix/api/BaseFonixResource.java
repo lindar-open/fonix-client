@@ -10,7 +10,6 @@ import lindar.fonix.exception.FonixNotAuthorizedException;
 import lindar.fonix.exception.FonixUnexpectedErrorException;
 import lindar.fonix.vo.internal.InternalFailureResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 
 import java.util.List;
@@ -20,7 +19,6 @@ import java.util.Map;
 abstract class BaseFonixResource {
 
     private final String API_KEY_HEADER = "X-API-KEY";
-    private final String BASE_URL = "https://sonar-fixed.fonix.io/v2/";
 
     final boolean dummyMode;
     final String baseUrl;
@@ -28,7 +26,7 @@ abstract class BaseFonixResource {
     private Map<String, String> authenticationHeaders;
 
     BaseFonixResource(String baseUrl, String apiKey, boolean dummyMode) {
-        this.baseUrl = StringUtils.defaultIfBlank(baseUrl, BASE_URL);
+        this.baseUrl = baseUrl;
         this.dummyMode = dummyMode;
         this.authenticationHeaders = MapsAcolyte.mapOf(Pair.of(API_KEY_HEADER, apiKey));
     }
