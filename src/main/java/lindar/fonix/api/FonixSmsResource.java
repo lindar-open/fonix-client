@@ -12,6 +12,7 @@ import lindar.fonix.vo.SendSmsResponse;
 import lindar.fonix.vo.internal.InternalChargeSmsResponse;
 import lindar.fonix.vo.internal.InternalSendSmsResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -27,6 +28,7 @@ import java.util.Map;
  */
 @Slf4j
 public class FonixSmsResource extends BaseFonixResource {
+    private static final String BASE_URL = "https://sonar-fixed.fonix.io/v2/";
 
     private final String SEND_SMS_ENDPOINT   = "sendsms";
     private final String CHARGE_SMS_ENDPOINT = "chargesms";
@@ -58,7 +60,7 @@ public class FonixSmsResource extends BaseFonixResource {
      * @param dummyMode when true api calls will run in dummy mode (no action taken) unless the dummy mode is otherwise specified
      */
     public FonixSmsResource(String baseUrl, String apiKey, boolean dummyMode) {
-        super(baseUrl, apiKey, dummyMode);
+        super(StringUtils.defaultIfBlank(baseUrl, BASE_URL), apiKey, dummyMode);
     }
 
     /**

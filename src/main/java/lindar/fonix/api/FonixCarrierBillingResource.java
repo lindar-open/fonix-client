@@ -30,6 +30,8 @@ import java.util.Map;
 @Slf4j
 public class FonixCarrierBillingResource extends BaseFonixResource {
 
+    private static final String BASE_URL = "https://sonar-fixed.fonix.io/v2/";
+
     private final FonixTranslator translator;
 
     private final String CHARGE_MOBILE_ENDPOINT = "chargemobile";
@@ -58,7 +60,7 @@ public class FonixCarrierBillingResource extends BaseFonixResource {
      * @param dummyMode when true api calls will run in dummy mode (no action taken) unless the dummy mode is otherwise specified
      */
     public FonixCarrierBillingResource(String baseUrl, String apiKey, FonixTranslator fonixTranslator, boolean dummyMode) {
-        super(baseUrl, apiKey, dummyMode);
+        super(StringUtils.defaultIfBlank(baseUrl, BASE_URL), apiKey, dummyMode);
         this.translator = fonixTranslator;
     }
 
