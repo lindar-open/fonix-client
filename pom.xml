@@ -6,7 +6,7 @@
 
     <groupId>com.lindar</groupId>
     <artifactId>fonix-client</artifactId>
-    <version>1.5.0</version>
+    <version>1.6.0-SNAPSHOT</version>
 
     <name>Fonix Java Client</name>
     <description>A java client for Fonix</description>
@@ -68,7 +68,7 @@
         <dependency>
             <groupId>com.lindar</groupId>
             <artifactId>well-rested-client</artifactId>
-            <version>2.0.0</version>
+            <version>2.3.1</version>
         </dependency>
 
         <dependency>

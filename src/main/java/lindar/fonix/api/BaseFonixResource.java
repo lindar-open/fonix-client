@@ -10,7 +10,7 @@ import lindar.fonix.exception.FonixNotAuthorizedException;
 import lindar.fonix.exception.FonixUnexpectedErrorException;
 import lindar.fonix.vo.internal.InternalFailureResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.NameValuePair;
+import org.apache.hc.core5.http.NameValuePair;
 
 import java.util.List;
 import java.util.Map;
