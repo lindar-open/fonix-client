@@ -14,8 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
