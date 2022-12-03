@@ -47,6 +47,7 @@ public class FonixCarrierBillingResource extends BaseFonixResource {
     private final String CR_STATUS_TEXT = "STATUSTEXT";
     private final String CR_REQUEST_ID = "REQUESTID";
     private final String CR_STATUS_TIME = "STATUSTIME";
+    private final String CR_CONTRACT = "CONTRACT";
 
     private final SimpleDateFormat parseStatusTime = new SimpleDateFormat("yyyyMMddhhmmss");
 
@@ -91,6 +92,7 @@ public class FonixCarrierBillingResource extends BaseFonixResource {
         chargeReport.setStatusCode(mapParameters.get(CR_STATUS_CODE));
         chargeReport.setChargeMethod(mapParameters.get(CR_CHARGE_METHOD));
         chargeReport.setRequestId(mapParameters.get(CR_REQUEST_ID));
+        chargeReport.setContract(mapParameters.get(CR_CONTRACT));
 
         if (NumberUtils.isParsable(mapParameters.get(CR_DURATION))) {
             chargeReport.setDuration(Integer.parseInt(mapParameters.get(CR_DURATION)));
