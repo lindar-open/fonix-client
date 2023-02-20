@@ -63,6 +63,11 @@ public class ChargeReport {
     */
     private Date statusTime;
 
+    /*
+     * The type of contract
+     */
+    private String contract;
+
 
 
     public boolean wasChargedSuccessfully(){
