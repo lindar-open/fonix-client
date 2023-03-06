@@ -5,6 +5,7 @@ import lindar.fonix.exception.FonixBadRequestException;
 import lindar.fonix.exception.FonixException;
 import lindar.fonix.exception.FonixNotAuthorizedException;
 import lindar.fonix.exception.FonixUnexpectedErrorException;
+import lindar.fonix.util.FonixDateUtil;
 import lindar.fonix.vo.ChargeSmsResponse;
 import lindar.fonix.vo.DeliveryReport;
 import lindar.fonix.vo.MobileOriginatedSms;
@@ -16,20 +17,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
-import org.jetbrains.annotations.NotNull;
 
-import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Api for dealing with SMS on the Fonix Platform
@@ -40,9 +31,6 @@ public class FonixSmsResource extends BaseFonixResource {
 
     private final String SEND_SMS_ENDPOINT   = "sendsms";
     private final String CHARGE_SMS_ENDPOINT = "chargesms";
-
-    private final DateTimeFormatter parseStatusTime = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-
 
     private final String IFVERSION     = "IFVERSION";
     private final String MOBILE_NUMBER = "MONUMBER";
@@ -59,7 +47,7 @@ public class FonixSmsResource extends BaseFonixResource {
     private final String DR_STATUS_TIME = "STATUSTIME";
 
     private final String MO_BODY = "BODY";
-
+    private final FonixDateUtil fonixDateUtil = new FonixDateUtil();
 
     /**
      * Constructor
@@ -169,7 +157,8 @@ public class FonixSmsResource extends BaseFonixResource {
         DeliveryReport deliveryReport = new DeliveryReport();
 
         deliveryReport.setMobileNumber(mapParameters.get(MOBILE_NUMBER));
-        deliveryReport.setGuid(mapParameters.get(GUID));
+        String guid = mapParameters.get(GUID);
+        deliveryReport.setGuid(guid);
         deliveryReport.setIfVersion(mapParameters.get(IFVERSION));
 
         deliveryReport.setOperator(mapParameters.get(OPERATOR));
@@ -185,12 +174,12 @@ public class FonixSmsResource extends BaseFonixResource {
         }
 
         if (mapParameters.containsKey(DR_STATUS_TIME)) {
-            deliveryReport.setStatusTime(getParsedDate(mapParameters, DR_STATUS_TIME));
+            deliveryReport.setStatusTime(fonixDateUtil.getParsedDate(mapParameters.get(DR_STATUS_TIME), guid));
         }
 
 
         if (mapParameters.containsKey(RECEIVE_TIME)) {
-            deliveryReport.setReceiveTime(getParsedDate(mapParameters, RECEIVE_TIME));
+            deliveryReport.setReceiveTime(fonixDateUtil.getParsedDate(mapParameters.get(RECEIVE_TIME), guid));
         }
         deliveryReport.setStatusText(mapParameters.get(DR_STATUS_TEXT));
 
@@ -205,14 +194,15 @@ public class FonixSmsResource extends BaseFonixResource {
     public MobileOriginatedSms parseMobileOriginatedSms(Map<String, String> mapParameters) {
         MobileOriginatedSms moSms = new MobileOriginatedSms();
 
-        moSms.setGuid(mapParameters.get(GUID));
+        String guid = mapParameters.get(GUID);
+        moSms.setGuid(guid);
         moSms.setIfVersion(mapParameters.get(IFVERSION));
         moSms.setOperator(mapParameters.get(OPERATOR));
         moSms.setMobileNumber(mapParameters.get(MOBILE_NUMBER));
         moSms.setDestination(mapParameters.get(DESTINATION));
 
         if (mapParameters.containsKey(RECEIVE_TIME)) {
-            moSms.setReceiveTime(getParsedDate(mapParameters, RECEIVE_TIME));
+            moSms.setReceiveTime(fonixDateUtil.getParsedDate(mapParameters.get(RECEIVE_TIME), guid));
         }
 
         if (NumberUtils.isParsable(mapParameters.get(PRICE))) {
@@ -232,16 +222,4 @@ public class FonixSmsResource extends BaseFonixResource {
         return moSms;
     }
 
-    private Date getParsedDate(Map<String, String> mapParameters, String dateTimeKey) {
-        try {
-            LocalDateTime localDateTime = LocalDateTime.parse(mapParameters.get(dateTimeKey), parseStatusTime);
-            return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-        } catch (DateTimeParseException e) {
-            log.error("unable to parse status time from string {}, map: {}", mapParameters.get(DR_STATUS_TIME),
-                    mapParameters.keySet().stream()
-                            .map(key -> key + "=" + mapParameters.get(key))
-                            .collect(Collectors.joining(", ", "{", "}")));
-            return null;
-        }
-    }
 }

@@ -1,19 +1,18 @@
 package lindar.fonix.vo;
 
+import lindar.fonix.util.FonixDateUtil;
 import lindar.fonix.vo.internal.InternalKycResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class KycResponse {
-    private static final SimpleDateFormat STATUS_TIME_FORMAT = new SimpleDateFormat("yyyyMMddhhmmss");
+    private static final FonixDateUtil fonixDateUtil = new FonixDateUtil();
 
     private String  ifVersion;
     private String  statusCode;
@@ -32,13 +31,14 @@ public class KycResponse {
     private String  contractType;
 
     public static KycResponse from(InternalKycResponse internalKycResponse) {
+        Date statusDateTime = fonixDateUtil.getParsedDate(internalKycResponse.getCompleted().getStatusTime(), internalKycResponse.getCompleted().getGuid());
         return new KycResponse(
                 internalKycResponse.getCompleted().getIfversion(),
                 internalKycResponse.getCompleted().getStatuscode(),
                 internalKycResponse.getCompleted().getStatustext(),
                 internalKycResponse.getCompleted().getGuid(),
                 internalKycResponse.getCompleted().getRequestid(),
-                parseDate(internalKycResponse.getCompleted().getStatusTime()),
+                statusDateTime,
                 internalKycResponse.getCompleted().getFirstNameMatch(),
                 internalKycResponse.getCompleted().getLastNameMatch(),
                 internalKycResponse.getCompleted().getFullNameMatch(),
@@ -51,11 +51,4 @@ public class KycResponse {
         );
     }
 
-    private static Date parseDate(String date) {
-        try {
-            return STATUS_TIME_FORMAT.parse(date);
-        } catch (ParseException e) {
-            return null;
-        }
-    }
 }
