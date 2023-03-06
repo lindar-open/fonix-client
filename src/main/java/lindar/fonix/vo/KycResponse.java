@@ -31,7 +31,7 @@ public class KycResponse {
     private String  contractType;
 
     public static KycResponse from(InternalKycResponse internalKycResponse) {
-        Date statusDateTime = fonixDateUtil.getParsedDate(internalKycResponse.getCompleted().getStatusTime(), internalKycResponse.getCompleted().getGuid());
+        Date statusDateTime = fonixDateUtil.getParsedDate("status time", internalKycResponse.getCompleted().getStatusTime(), internalKycResponse.getCompleted().getGuid());
         return new KycResponse(
                 internalKycResponse.getCompleted().getIfversion(),
                 internalKycResponse.getCompleted().getStatuscode(),

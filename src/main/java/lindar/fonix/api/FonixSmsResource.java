@@ -174,12 +174,12 @@ public class FonixSmsResource extends BaseFonixResource {
         }
 
         if (mapParameters.containsKey(DR_STATUS_TIME)) {
-            deliveryReport.setStatusTime(fonixDateUtil.getParsedDate(mapParameters.get(DR_STATUS_TIME), guid));
+            deliveryReport.setStatusTime(fonixDateUtil.getParsedDate(DR_STATUS_TIME, mapParameters.get(DR_STATUS_TIME), guid));
         }
 
 
         if (mapParameters.containsKey(RECEIVE_TIME)) {
-            deliveryReport.setReceiveTime(fonixDateUtil.getParsedDate(mapParameters.get(RECEIVE_TIME), guid));
+            deliveryReport.setReceiveTime(fonixDateUtil.getParsedDate(RECEIVE_TIME, mapParameters.get(RECEIVE_TIME), guid));
         }
         deliveryReport.setStatusText(mapParameters.get(DR_STATUS_TEXT));
 
@@ -202,7 +202,7 @@ public class FonixSmsResource extends BaseFonixResource {
         moSms.setDestination(mapParameters.get(DESTINATION));
 
         if (mapParameters.containsKey(RECEIVE_TIME)) {
-            moSms.setReceiveTime(fonixDateUtil.getParsedDate(mapParameters.get(RECEIVE_TIME), guid));
+            moSms.setReceiveTime(fonixDateUtil.getParsedDate(RECEIVE_TIME, mapParameters.get(RECEIVE_TIME), guid));
         }
 
         if (NumberUtils.isParsable(mapParameters.get(PRICE))) {

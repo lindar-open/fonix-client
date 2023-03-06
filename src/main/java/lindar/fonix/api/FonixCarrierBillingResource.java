@@ -100,7 +100,7 @@ public class FonixCarrierBillingResource extends BaseFonixResource {
         }
 
         if (mapParameters.containsKey(CR_STATUS_TIME)) {
-            chargeReport.setStatusTime(fonixDateUtil.getParsedDate(mapParameters.get(CR_STATUS_TIME), guid));
+            chargeReport.setStatusTime(fonixDateUtil.getParsedDate(CR_STATUS_TIME, mapParameters.get(CR_STATUS_TIME), guid));
         }
 
         chargeReport.setStatusText(translator.translateChargeReportStatusText(chargeReport.getOperator(), chargeReport.getStatusCode(), chargeReport.getChargeMethod(), mapParameters.get(CR_STATUS_TEXT)));

@@ -13,12 +13,12 @@ import java.util.Date;
 public class FonixDateUtil {
     final DateTimeFormatter parseStatusTime = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
-    public Date getParsedDate(String dateTimeString, String gid) {
+    public Date getParsedDate(String timeDescriptor, String dateTimeString, String gid) {
         try {
             LocalDateTime localDateTime = LocalDateTime.parse(dateTimeString, parseStatusTime);
             return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
         } catch (DateTimeParseException e) {
-            log.error("unable to parse status time from string {}, gid: {}", dateTimeString, gid);
+            log.error("unable to parse {} from string {}, gid: {}", timeDescriptor, dateTimeString, gid);
             return null;
         }
     }
