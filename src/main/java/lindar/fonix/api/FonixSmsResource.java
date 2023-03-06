@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Api for dealing with SMS on the Fonix Platform
@@ -180,8 +181,14 @@ public class FonixSmsResource extends BaseFonixResource {
             if (mapParameters.containsKey(DR_STATUS_TIME)) {
                 deliveryReport.setStatusTime(parseStatusTime.parse(mapParameters.get(DR_STATUS_TIME)));
             }
-        } catch (ParseException | NumberFormatException e) {
+        } catch (ParseException e) {
             log.error("unable to parse status time from string {}", mapParameters.get(DR_STATUS_TIME));
+        } catch (NumberFormatException e) {
+            log.error("unable to parse status time from string {}, map: {}", mapParameters.get(DR_STATUS_TIME),
+                    mapParameters.keySet().stream()
+                    .map(key -> key + "=" + mapParameters.get(key))
+                    .collect(Collectors.joining(", ", "{", "}")));
+            throw e;
         }
 
         try {
