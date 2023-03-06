@@ -18,7 +18,7 @@ public class FonixDateUtil {
             LocalDateTime localDateTime = LocalDateTime.parse(dateTimeString, parseStatusTime);
             return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
         } catch (DateTimeParseException e) {
-            log.error("unable to parse {} from string {}, gid: {}", timeDescriptor, dateTimeString, gid);
+            log.error("unable to parse {} from string {}, gid: {}", timeDescriptor, dateTimeString, gid, e);
             return null;
         }
     }
