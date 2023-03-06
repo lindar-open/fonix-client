@@ -180,7 +180,7 @@ public class FonixSmsResource extends BaseFonixResource {
             if (mapParameters.containsKey(DR_STATUS_TIME)) {
                 deliveryReport.setStatusTime(parseStatusTime.parse(mapParameters.get(DR_STATUS_TIME)));
             }
-        } catch (ParseException e) {
+        } catch (ParseException | NumberFormatException e) {
             log.error("unable to parse status time from string {}", mapParameters.get(DR_STATUS_TIME));
         }
 
