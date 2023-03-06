@@ -16,10 +16,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.jetbrains.annotations.NotNull;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,7 +41,7 @@ public class FonixSmsResource extends BaseFonixResource {
     private final String SEND_SMS_ENDPOINT   = "sendsms";
     private final String CHARGE_SMS_ENDPOINT = "chargesms";
 
-    private final SimpleDateFormat parseStatusTime = new SimpleDateFormat("yyyyMMddhhmmss");
+    private final DateTimeFormatter parseStatusTime = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
 
     private final String IFVERSION     = "IFVERSION";
@@ -177,28 +184,14 @@ public class FonixSmsResource extends BaseFonixResource {
             deliveryReport.setRetryCount(Integer.parseInt(mapParameters.get(RETRY_COUNT)));
         }
 
-        try {
-            if (mapParameters.containsKey(DR_STATUS_TIME)) {
-                deliveryReport.setStatusTime(parseStatusTime.parse(mapParameters.get(DR_STATUS_TIME)));
-            }
-        } catch (ParseException e) {
-            log.error("unable to parse status time from string {}", mapParameters.get(DR_STATUS_TIME));
-        } catch (NumberFormatException e) {
-            log.error("unable to parse status time from string {}, map: {}", mapParameters.get(DR_STATUS_TIME),
-                    mapParameters.keySet().stream()
-                    .map(key -> key + "=" + mapParameters.get(key))
-                    .collect(Collectors.joining(", ", "{", "}")));
-            throw e;
+        if (mapParameters.containsKey(DR_STATUS_TIME)) {
+            deliveryReport.setStatusTime(getParsedDate(mapParameters, DR_STATUS_TIME));
         }
 
-        try {
-            if (mapParameters.containsKey(RECEIVE_TIME)) {
-                deliveryReport.setReceiveTime(parseStatusTime.parse(mapParameters.get(RECEIVE_TIME)));
-            }
-        } catch (ParseException e) {
-            log.error("unable to parse receive time from string {}", mapParameters.get(RECEIVE_TIME));
-        }
 
+        if (mapParameters.containsKey(RECEIVE_TIME)) {
+            deliveryReport.setReceiveTime(getParsedDate(mapParameters, RECEIVE_TIME));
+        }
         deliveryReport.setStatusText(mapParameters.get(DR_STATUS_TEXT));
 
         return deliveryReport;
@@ -218,12 +211,8 @@ public class FonixSmsResource extends BaseFonixResource {
         moSms.setMobileNumber(mapParameters.get(MOBILE_NUMBER));
         moSms.setDestination(mapParameters.get(DESTINATION));
 
-        try {
-            if (mapParameters.containsKey(RECEIVE_TIME)) {
-                moSms.setReceiveTime(parseStatusTime.parse(mapParameters.get(RECEIVE_TIME)));
-            }
-        } catch (ParseException e) {
-            log.error("unable to parse receive time from string {}", mapParameters.get(RECEIVE_TIME));
+        if (mapParameters.containsKey(RECEIVE_TIME)) {
+            moSms.setReceiveTime(getParsedDate(mapParameters, RECEIVE_TIME));
         }
 
         if (NumberUtils.isParsable(mapParameters.get(PRICE))) {
@@ -243,4 +232,16 @@ public class FonixSmsResource extends BaseFonixResource {
         return moSms;
     }
 
+    private Date getParsedDate(Map<String, String> mapParameters, String dateTimeKey) {
+        try {
+            LocalDateTime localDateTime = LocalDateTime.parse(mapParameters.get(dateTimeKey), parseStatusTime);
+            return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        } catch (DateTimeParseException e) {
+            log.error("unable to parse status time from string {}, map: {}", mapParameters.get(DR_STATUS_TIME),
+                    mapParameters.keySet().stream()
+                            .map(key -> key + "=" + mapParameters.get(key))
+                            .collect(Collectors.joining(", ", "{", "}")));
+            return null;
+        }
+    }
 }
