@@ -5,7 +5,7 @@ import lindar.fonix.exception.FonixBadRequestException;
 import lindar.fonix.exception.FonixException;
 import lindar.fonix.exception.FonixNotAuthorizedException;
 import lindar.fonix.exception.FonixUnexpectedErrorException;
-import lindar.fonix.util.FonixDateUtil;
+import lindar.fonix.util.FonixDateParser;
 import lindar.fonix.vo.ChargeSmsResponse;
 import lindar.fonix.vo.DeliveryReport;
 import lindar.fonix.vo.MobileOriginatedSms;
@@ -47,7 +47,7 @@ public class FonixSmsResource extends BaseFonixResource {
     private final String DR_STATUS_TIME = "STATUSTIME";
 
     private final String MO_BODY = "BODY";
-    private final FonixDateUtil fonixDateUtil = new FonixDateUtil();
+    private final FonixDateParser fonixDateParser = new FonixDateParser();
 
     /**
      * Constructor
@@ -174,12 +174,12 @@ public class FonixSmsResource extends BaseFonixResource {
         }
 
         if (mapParameters.containsKey(DR_STATUS_TIME)) {
-            deliveryReport.setStatusTime(fonixDateUtil.getParsedDate(DR_STATUS_TIME, mapParameters.get(DR_STATUS_TIME), guid));
+            deliveryReport.setStatusTime(fonixDateParser.getParsedDate(DR_STATUS_TIME, mapParameters.get(DR_STATUS_TIME), guid));
         }
 
 
         if (mapParameters.containsKey(RECEIVE_TIME)) {
-            deliveryReport.setReceiveTime(fonixDateUtil.getParsedDate(RECEIVE_TIME, mapParameters.get(RECEIVE_TIME), guid));
+            deliveryReport.setReceiveTime(fonixDateParser.getParsedDate(RECEIVE_TIME, mapParameters.get(RECEIVE_TIME), guid));
         }
         deliveryReport.setStatusText(mapParameters.get(DR_STATUS_TEXT));
 
@@ -202,7 +202,7 @@ public class FonixSmsResource extends BaseFonixResource {
         moSms.setDestination(mapParameters.get(DESTINATION));
 
         if (mapParameters.containsKey(RECEIVE_TIME)) {
-            moSms.setReceiveTime(fonixDateUtil.getParsedDate(RECEIVE_TIME, mapParameters.get(RECEIVE_TIME), guid));
+            moSms.setReceiveTime(fonixDateParser.getParsedDate(RECEIVE_TIME, mapParameters.get(RECEIVE_TIME), guid));
         }
 
         if (NumberUtils.isParsable(mapParameters.get(PRICE))) {

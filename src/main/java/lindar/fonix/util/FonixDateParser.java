@@ -10,7 +10,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Date;
 
 @Slf4j @NoArgsConstructor
-public class FonixDateUtil {
+public class FonixDateParser {
     final DateTimeFormatter parseStatusTime = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
     public Date getParsedDate(String timeDescriptor, String dateTimeString, String gid) {

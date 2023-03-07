@@ -1,6 +1,6 @@
 package lindar.fonix.vo;
 
-import lindar.fonix.util.FonixDateUtil;
+import lindar.fonix.util.FonixDateParser;
 import lindar.fonix.vo.internal.InternalKycResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class KycResponse {
-    private static final FonixDateUtil fonixDateUtil = new FonixDateUtil();
+    private static final FonixDateParser FONIX_DATE_PARSER = new FonixDateParser();
 
     private String  ifVersion;
     private String  statusCode;
@@ -31,7 +31,7 @@ public class KycResponse {
     private String  contractType;
 
     public static KycResponse from(InternalKycResponse internalKycResponse) {
-        Date statusDateTime = fonixDateUtil.getParsedDate("status time", internalKycResponse.getCompleted().getStatusTime(), internalKycResponse.getCompleted().getGuid());
+        Date statusDateTime = FONIX_DATE_PARSER.getParsedDate("status time", internalKycResponse.getCompleted().getStatusTime(), internalKycResponse.getCompleted().getGuid());
         return new KycResponse(
                 internalKycResponse.getCompleted().getIfversion(),
                 internalKycResponse.getCompleted().getStatuscode(),

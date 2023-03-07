@@ -5,7 +5,7 @@ import lindar.fonix.exception.FonixBadRequestException;
 import lindar.fonix.exception.FonixException;
 import lindar.fonix.exception.FonixNotAuthorizedException;
 import lindar.fonix.exception.FonixUnexpectedErrorException;
-import lindar.fonix.util.FonixDateUtil;
+import lindar.fonix.util.FonixDateParser;
 import lindar.fonix.util.FonixTranslator;
 import lindar.fonix.vo.CarrierBilling;
 import lindar.fonix.vo.CarrierBillingResponse;
@@ -48,7 +48,7 @@ public class FonixCarrierBillingResource extends BaseFonixResource {
     private final String CR_STATUS_TIME = "STATUSTIME";
     private final String CR_CONTRACT = "CONTRACT";
 
-    private final FonixDateUtil fonixDateUtil = new FonixDateUtil();
+    private final FonixDateParser fonixDateParser = new FonixDateParser();
 
     /**
      * Constructor
@@ -100,7 +100,7 @@ public class FonixCarrierBillingResource extends BaseFonixResource {
         }
 
         if (mapParameters.containsKey(CR_STATUS_TIME)) {
-            chargeReport.setStatusTime(fonixDateUtil.getParsedDate(CR_STATUS_TIME, mapParameters.get(CR_STATUS_TIME), guid));
+            chargeReport.setStatusTime(fonixDateParser.getParsedDate(CR_STATUS_TIME, mapParameters.get(CR_STATUS_TIME), guid));
         }
 
         chargeReport.setStatusText(translator.translateChargeReportStatusText(chargeReport.getOperator(), chargeReport.getStatusCode(), chargeReport.getChargeMethod(), mapParameters.get(CR_STATUS_TEXT)));
