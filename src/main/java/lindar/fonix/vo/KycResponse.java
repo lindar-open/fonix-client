@@ -1,19 +1,18 @@
 package lindar.fonix.vo;
 
+import lindar.fonix.util.FonixDateParser;
 import lindar.fonix.vo.internal.InternalKycResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class KycResponse {
-    private static final SimpleDateFormat STATUS_TIME_FORMAT = new SimpleDateFormat("yyyyMMddhhmmss");
+    private static final FonixDateParser FONIX_DATE_PARSER = new FonixDateParser();
 
     private String  ifVersion;
     private String  statusCode;
@@ -32,30 +31,25 @@ public class KycResponse {
     private String  contractType;
 
     public static KycResponse from(InternalKycResponse internalKycResponse) {
+        InternalKycResponse.Completed kycResponseCompleted = internalKycResponse.getCompleted();
+        Date statusDateTime = FONIX_DATE_PARSER.getParsedDate("status time", kycResponseCompleted.getStatusTime(), kycResponseCompleted.getGuid());
         return new KycResponse(
-                internalKycResponse.getCompleted().getIfversion(),
-                internalKycResponse.getCompleted().getStatuscode(),
-                internalKycResponse.getCompleted().getStatustext(),
-                internalKycResponse.getCompleted().getGuid(),
-                internalKycResponse.getCompleted().getRequestid(),
-                parseDate(internalKycResponse.getCompleted().getStatusTime()),
-                internalKycResponse.getCompleted().getFirstNameMatch(),
-                internalKycResponse.getCompleted().getLastNameMatch(),
-                internalKycResponse.getCompleted().getFullNameMatch(),
-                internalKycResponse.getCompleted().getPostcodeMatch(),
-                internalKycResponse.getCompleted().getHouseMatch(),
-                internalKycResponse.getCompleted().getFullAddressMatch(),
-                internalKycResponse.getCompleted().getBirthdayMatch(),
-                internalKycResponse.getCompleted().getIsStolen(),
-                internalKycResponse.getCompleted().getContractType()
+                kycResponseCompleted.getIfversion(),
+                kycResponseCompleted.getStatuscode(),
+                kycResponseCompleted.getStatustext(),
+                kycResponseCompleted.getGuid(),
+                kycResponseCompleted.getRequestid(),
+                statusDateTime,
+                kycResponseCompleted.getFirstNameMatch(),
+                kycResponseCompleted.getLastNameMatch(),
+                kycResponseCompleted.getFullNameMatch(),
+                kycResponseCompleted.getPostcodeMatch(),
+                kycResponseCompleted.getHouseMatch(),
+                kycResponseCompleted.getFullAddressMatch(),
+                kycResponseCompleted.getBirthdayMatch(),
+                kycResponseCompleted.getIsStolen(),
+                kycResponseCompleted.getContractType()
         );
     }
 
-    private static Date parseDate(String date) {
-        try {
-            return STATUS_TIME_FORMAT.parse(date);
-        } catch (ParseException e) {
-            return null;
-        }
-    }
 }

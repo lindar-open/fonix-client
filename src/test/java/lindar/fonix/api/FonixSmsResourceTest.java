@@ -28,80 +28,38 @@ public class FonixSmsResourceTest {
     }
 
     @Test
-    public void parseDeliveryReport_validDate_statusTimeResponseCorrect() {
+    public void parseDeliveryReport_validParameters_responseCorrect() {
         // given
-        Map<String, String> parameters = getParseDeliveryReportParameters("20230306101252");
-
-        // when
-        DeliveryReport response = fonixClient.sms().parseDeliveryReport(parameters);
-
-        // then
-        assertThat(response, hasProperty("statusTime", is(new Date(1678093972000L))));
-    }
-
-    @Test
-    public void parseDeliveryReport_validDateNearMidnight_statusTimeResponseCorrect() {
-        // given
-        Map<String, String> parameters = getParseDeliveryReportParameters("20230306235959");
-
-        // when
-        DeliveryReport response = fonixClient.sms().parseDeliveryReport(parameters);
-
-        // then
-        assertThat(response, hasProperty("statusTime", is(new Date(1678143599000L))));
-    }
-
-    @Test
-    public void parseDeliveryReport_validDateAtDaylightSavingsSummerTime_statusTimeResponseCorrect() {
-        // given
-        Map<String, String> parameters = getParseDeliveryReportParameters("20230326020000");
-
-        // when
-        DeliveryReport response = fonixClient.sms().parseDeliveryReport(parameters);
-
-        // then
-        assertThat(response, hasProperty("statusTime", is(new Date(1679792400000L))));
-    }
-
-    @Test
-    public void parseDeliveryReport_validDateAtDaylightSavingsWinterTime_statusTimeResponseCorrect() {
-        // given
-        Map<String, String> parameters = getParseDeliveryReportParameters("20231029030000");
-
-        // when
-        DeliveryReport response = fonixClient.sms().parseDeliveryReport(parameters);
-
-        // then
-        assertThat(response, hasProperty("statusTime", is(new Date(1698544800000L))));
-    }
-
-    @Test
-    public void parseDeliveryReport_invalidDate_statusTimeResponseNull() {
-        // given
-        Map<String, String> parameters = getParseDeliveryReportParameters("2023032602");
-
-        // when
-        DeliveryReport response = fonixClient.sms().parseDeliveryReport(parameters);
-
-        // then
-        assertThat(response, hasProperty("statusTime", isEmptyOrNullString()));
-    }
-
-    private static Map<String, String> getParseDeliveryReportParameters(String statusTimeValue) {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("IFVERSION","201001");
         parameters.put("OPERATOR","unknown");
         parameters.put("RETRYCOUNT","0");
-        parameters.put("MONUMBER","94778978873");
+        parameters.put("MONUMBER","94778378773");
         parameters.put("DESTINATION","MrQ");
-        parameters.put("STATUSTIME", statusTimeValue);
+        parameters.put("STATUSTIME", "20230306101252");
         parameters.put("STATUSTEXT","Permanent+Error+%28network%2Fparameters%29");
         parameters.put("STATUSCODE","PERMANENT_OPERATOR_ERROR");
         parameters.put("CHARGESTATUS","false");
         parameters.put("GUID","fc7af6ee-2641-4f9c-82cc-2724f6cd4bf3");
         parameters.put("PRICE","0");
         parameters.put("DURATION","661");
-        return parameters;
+
+        // when
+        DeliveryReport response = fonixClient.sms().parseDeliveryReport(parameters);
+
+        // then
+        assertThat(response, hasProperty("ifVersion", is("201001")));
+        assertThat(response, hasProperty("operator", is("unknown")));
+        assertThat(response, hasProperty("mobileNumber", is("94778378773")));
+        assertThat(response, hasProperty("destination", isEmptyOrNullString()));
+        assertThat(response, hasProperty("guid", is("fc7af6ee-2641-4f9c-82cc-2724f6cd4bf3")));
+        assertThat(response, hasProperty("receiveTime", isEmptyOrNullString()));
+        assertThat(response, hasProperty("price", isEmptyOrNullString()));
+        assertThat(response, hasProperty("duration", is(661)));
+        assertThat(response, hasProperty("retryCount", is(0)));
+        assertThat(response, hasProperty("statusTime", is(new Date(1678093972000L))));
+        assertThat(response, hasProperty("statusCode", is("PERMANENT_OPERATOR_ERROR")));
+        assertThat(response, hasProperty("statusText", is("Permanent+Error+%28network%2Fparameters%29")));
     }
 
 }

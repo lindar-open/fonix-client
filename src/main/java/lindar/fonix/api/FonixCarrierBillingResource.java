@@ -1,12 +1,13 @@
 package lindar.fonix.api;
 
 import com.lindar.wellrested.vo.WellRestedResponse;
-import lindar.fonix.util.FonixTranslator;
-import lindar.fonix.vo.CarrierBilling;
 import lindar.fonix.exception.FonixBadRequestException;
 import lindar.fonix.exception.FonixException;
 import lindar.fonix.exception.FonixNotAuthorizedException;
 import lindar.fonix.exception.FonixUnexpectedErrorException;
+import lindar.fonix.util.FonixDateParser;
+import lindar.fonix.util.FonixTranslator;
+import lindar.fonix.vo.CarrierBilling;
 import lindar.fonix.vo.CarrierBillingResponse;
 import lindar.fonix.vo.ChargeReport;
 import lindar.fonix.vo.internal.InternalCarrierBillingResponse;
@@ -17,8 +18,6 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,10 +48,7 @@ public class FonixCarrierBillingResource extends BaseFonixResource {
     private final String CR_STATUS_TIME = "STATUSTIME";
     private final String CR_CONTRACT = "CONTRACT";
 
-    private final SimpleDateFormat parseStatusTime = new SimpleDateFormat("yyyyMMddhhmmss");
-
-
-    private Map<String, String> authenticationHeaders;
+    private final FonixDateParser fonixDateParser = new FonixDateParser();
 
     /**
      * Constructor
@@ -85,7 +81,8 @@ public class FonixCarrierBillingResource extends BaseFonixResource {
         ChargeReport chargeReport = new ChargeReport();
 
         chargeReport.setMobileNumber(mapParameters.get(CR_MOBILE_NUMBER));
-        chargeReport.setGuid(mapParameters.get(CR_GUID));
+        String guid = mapParameters.get(CR_GUID);
+        chargeReport.setGuid(guid);
         chargeReport.setIfVersion(mapParameters.get(CR_IFVERSION));
 
         chargeReport.setOperator(mapParameters.get(CR_OPERATOR));
@@ -102,12 +99,8 @@ public class FonixCarrierBillingResource extends BaseFonixResource {
             chargeReport.setRetryCount(Integer.parseInt(mapParameters.get(CR_RETRY_COUNT)));
         }
 
-        try {
-            if (mapParameters.containsKey(CR_STATUS_TIME)) {
-                chargeReport.setStatusTime(parseStatusTime.parse(mapParameters.get(CR_STATUS_TIME)));
-            }
-        } catch (ParseException e) {
-            log.error("unable to parse status time from string {}", mapParameters.get(CR_STATUS_TIME));
+        if (mapParameters.containsKey(CR_STATUS_TIME)) {
+            chargeReport.setStatusTime(fonixDateParser.getParsedDate(CR_STATUS_TIME, mapParameters.get(CR_STATUS_TIME), guid));
         }
 
         chargeReport.setStatusText(translator.translateChargeReportStatusText(chargeReport.getOperator(), chargeReport.getStatusCode(), chargeReport.getChargeMethod(), mapParameters.get(CR_STATUS_TEXT)));
