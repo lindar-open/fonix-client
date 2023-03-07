@@ -31,23 +31,24 @@ public class KycResponse {
     private String  contractType;
 
     public static KycResponse from(InternalKycResponse internalKycResponse) {
-        Date statusDateTime = FONIX_DATE_PARSER.getParsedDate("status time", internalKycResponse.getCompleted().getStatusTime(), internalKycResponse.getCompleted().getGuid());
+        InternalKycResponse.Completed kycResponseCompleted = internalKycResponse.getCompleted();
+        Date statusDateTime = FONIX_DATE_PARSER.getParsedDate("status time", kycResponseCompleted.getStatusTime(), kycResponseCompleted.getGuid());
         return new KycResponse(
-                internalKycResponse.getCompleted().getIfversion(),
-                internalKycResponse.getCompleted().getStatuscode(),
-                internalKycResponse.getCompleted().getStatustext(),
-                internalKycResponse.getCompleted().getGuid(),
-                internalKycResponse.getCompleted().getRequestid(),
+                kycResponseCompleted.getIfversion(),
+                kycResponseCompleted.getStatuscode(),
+                kycResponseCompleted.getStatustext(),
+                kycResponseCompleted.getGuid(),
+                kycResponseCompleted.getRequestid(),
                 statusDateTime,
-                internalKycResponse.getCompleted().getFirstNameMatch(),
-                internalKycResponse.getCompleted().getLastNameMatch(),
-                internalKycResponse.getCompleted().getFullNameMatch(),
-                internalKycResponse.getCompleted().getPostcodeMatch(),
-                internalKycResponse.getCompleted().getHouseMatch(),
-                internalKycResponse.getCompleted().getFullAddressMatch(),
-                internalKycResponse.getCompleted().getBirthdayMatch(),
-                internalKycResponse.getCompleted().getIsStolen(),
-                internalKycResponse.getCompleted().getContractType()
+                kycResponseCompleted.getFirstNameMatch(),
+                kycResponseCompleted.getLastNameMatch(),
+                kycResponseCompleted.getFullNameMatch(),
+                kycResponseCompleted.getPostcodeMatch(),
+                kycResponseCompleted.getHouseMatch(),
+                kycResponseCompleted.getFullAddressMatch(),
+                kycResponseCompleted.getBirthdayMatch(),
+                kycResponseCompleted.getIsStolen(),
+                kycResponseCompleted.getContractType()
         );
     }
 
